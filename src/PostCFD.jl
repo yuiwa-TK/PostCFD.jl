@@ -2,6 +2,8 @@ module PostCFD
 
 # Write your package code here.
 """Hello"""
-println("Hello World")
-
+function helloworld()
+    println("helloworld")
 end
+
+end # module
