@@ -7,7 +7,7 @@ module Visualizer
 
 import Plots
 
-export 
+# export
 
 # 
 include("../BasicFuncsContainer/conservative2primitive.jl") #

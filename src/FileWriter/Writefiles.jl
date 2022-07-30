@@ -3,7 +3,7 @@ module FileWriter
 include("./write_flow.jl")
 include("./write_grid.jl")
 
-@export writefiles
+export writefiles
 
 """
   writefiles(filename, data...; mode) 
