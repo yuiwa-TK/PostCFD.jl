@@ -2,7 +2,7 @@ include("./write_flow.jl")
 include("./write_grid.jl")
 
 """
-function  writefiles(filename, data...; mode) 
+  writefiles(filename, data...; mode) 
 is the wrapper fucntion for write files related to HPC_TEMPLATE
     
   mode ∈ [grid_fv(=grid_single),
