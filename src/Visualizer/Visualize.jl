@@ -6,6 +6,7 @@ Flow & Grid Visualization
 module Visualizer
 
 import Plots
+@reexport Plots
 
 # export
 
