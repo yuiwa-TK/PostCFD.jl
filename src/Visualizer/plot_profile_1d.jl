@@ -1,6 +1,5 @@
 """
-    #plot_1dprofile_prim(xyz,flow,[gridrange]; filename)
-    #plot_1dprofile_conv(xyz,flow,[gridrange]; filename)
+    plot_1dprofile_prim(xyz,flow,[gridrange]; filename)
 
     plot 1D profile of primitive(conservative) variables.
     input: xyz_data, flow_data
@@ -44,8 +43,10 @@ function plot_1dprofile_prim(xyz,flow,gridrange::Tuple; filename::String)
 end
 
 """
-    plot 1D profile of conservative variables.
-    input: xyz_data, flow_data
+  plot_1dprofile_conv(xyz,flow,[gridrange]; filename)
+
+  plot 1D profile of conservative variables.
+  input: xyz_data, flow_data
     keywords : filename,gridrange
 """
 function plot_1dprofile_conv(xyz,flow; filename::String)
