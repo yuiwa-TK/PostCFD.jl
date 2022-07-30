@@ -5,6 +5,9 @@ Flow & Grid Visualization
 """
 module Visualizer
 
+using Reexport
+@reexport using Plots
+
 # export
 
 # 

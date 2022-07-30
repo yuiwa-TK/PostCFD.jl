@@ -2,8 +2,7 @@ module PostCFD
 
 using Reexport
 
-using Plots
-@reexport Plots
+# @reexport using Plots
 
 # File Read
 include("FileReader/Readfiles.jl")
