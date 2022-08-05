@@ -2,6 +2,7 @@ module FileReader
 
 include("./read_grid.jl")
 include("./read_flow.jl")
+include("./read_qave.jl")
 include("./read_divided.jl")
 include("./read_header.jl")
 
@@ -51,8 +52,13 @@ function readfiles(filename::String; mode::String)
     elseif mode == "restart"
         return read_restart(filename)
 
+    # Grid dimension
     elseif mode == "dims" || mode == "size"
         return read_grid_dims(filename)
+
+    # 199 Statistics
+    elseif mode == "stats" || mode == "stats_v2"
+        return read_statistics(filename;mode=2)
 
     # normal .dat file with header
     elseif mode == "header"
