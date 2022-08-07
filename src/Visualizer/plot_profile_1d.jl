@@ -1,6 +1,6 @@
 """
-    #plot_1dprofile_prim(xyz,flow,[gridrange]; filename)
-    #plot_1dprofile_conv(xyz,flow,[gridrange]; filename)
+  plot_1dprofile_prim(xyz,flow,[gridrange]; filename)
+  plot_1dprofile_conv(xyz,flow,[gridrange]; filename)
 
     plot 1D profile of primitive(conservative) variables.
     input: xyz_data, flow_data
