@@ -1,30 +1,37 @@
+module FileReader
+
 include("./read_grid.jl")
 include("./read_flow.jl")
+include("./read_qave.jl")
 include("./read_divided.jl")
 include("./read_header.jl")
 
+export readfiles
+
 """
-    wrapper fucntion for read files related to HPC_TEMPLATE
-    +readfiles(filename, mode)     :: read files
-    +readfiles(compdir, mode, ids) :: read diveded grid/restart files 
-                                      in directory "compdir"
+    readfiles(filename::String; mode::String [, ids]) 
 
-    mode ∈ [grid (=grid_double), 
-            grid_single,
-            flow_fv (=pl3d. flow_single),
-            restart,
-            dims (=size),
-            header,
-            ---------------
-    [!NOTE!]divided_xxx is assumed to be double precision[!NOTE!]
-            divided_grid(=grid),
-            divided_restart,
-            divided_restart_old,
-            divided_flow,
-            divided_flow_old, ]
+is a wrapper fucntion for reading files
++readfiles(filename, mode)     :: read files
++readfiles(compdir, mode, ids) :: read diveded grid/restart files 
+                                    in directory "compdir"
 
-    [!Note!]
-            divided_flow_slice
+mode ∈ [grid (=grid_double), 
+        grid_single,
+        flow_fv (=pl3d. flow_single),
+        restart,
+        dims (=size),
+        header,
+        ---------------
+[!NOTE!]divided_xxx is assumed to be double precision[!NOTE!]
+        divided_grid(=grid),
+        divided_restart,
+        divided_restart_old,
+        divided_flow,
+        divided_flow_old, ]
+
+[!Note!]
+        divided_flow_slice
 """
 function readfiles(filename::String; mode::String)
     @show mode
@@ -45,8 +52,13 @@ function readfiles(filename::String; mode::String)
     elseif mode == "restart"
         return read_restart(filename)
 
+    # Grid dimension
     elseif mode == "dims" || mode == "size"
         return read_grid_dims(filename)
+
+    # 199 Statistics
+    elseif mode == "stats" || mode == "stats_v2"
+        return read_statistics(filename;mode=2)
 
     # normal .dat file with header
     elseif mode == "header"
@@ -70,4 +82,6 @@ function readfiles(compdir::String, ids::Union{OrdinalRange,Vector{Int}},filebas
     if mode == "divided_flow_slice"
         return read_dividedrestart(compdir,ids,filebase)
     end
+end
+
 end

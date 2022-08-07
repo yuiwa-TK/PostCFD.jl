@@ -15,5 +15,3 @@ function read_function_single(filename::String,nvar::Int)
     end
     return qall
 end
-
-q = read_function_single("/skraid4/iwatani/Utils/Utils/Test/ROM_k01_t00001.func",52)

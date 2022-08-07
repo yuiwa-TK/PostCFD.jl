@@ -5,7 +5,7 @@ function conv2prim(qc,dim::Tuple{Int,Int,Int,Int})
   jmax,kmax,lmax,nvar = dim
 
   gamma  = 1.4
-  gamma1 =0.4
+  gamma1 = 0.4
   gasc   = 1/gamma
 
   r = qc[:,:,:,1]

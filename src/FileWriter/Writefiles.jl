@@ -1,11 +1,15 @@
+module FileWriter
+
 include("./write_flow.jl")
 include("./write_grid.jl")
 
+export writefiles
+
 """
-function  writefiles(filename, data...; mode) 
-is the wrapper fucntion for write files related to HPC_TEMPLATE
-    
-  mode ∈ [grid_fv(=grid_single),
+  writefiles(filename, data...; mode) 
+
+is the wrapper fucntion for writting files related to HPC_TEMPLATE
+mode ∈ [grid_fv(=grid_single),
           flow_fv(=pl3d, =flow_single),
           grid_double,
           restart]
@@ -33,4 +37,6 @@ function writefiles(filename::String,q::Array{T},params::Array{T},nc::Int; mode:
   if mode == "restart"
     return write_restart_double(filename,q,params,nc)
   end
+end
+
 end

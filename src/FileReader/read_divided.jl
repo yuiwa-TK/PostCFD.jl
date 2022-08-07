@@ -1,4 +1,6 @@
 """
+    read_dividedrestart(Compdir::String,flowids::Union{OrdinalRange,Vector{Int}})
+
 read divided restart files.
 This function returns xyz_vector=Vector{Array{Float64}(jmax,kmax,lmax,3)}.
 Arg1 : name of directory that contains the divided restart files.
