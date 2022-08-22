@@ -8,7 +8,7 @@ function plot_1dprofile_prim(xyz,flow; filename::String)
   @assert length(xyz)==length(flow[:,1])
 
   if size(flow,2)==5
-    fp  = conv2prim(flow,size(flow))
+    fp  = VarsConverter.conv2prim(flow,size(flow))
   elseif size(flow,2)==6
     fp  = flow
   end
@@ -22,11 +22,11 @@ function plot_1dprofile_prim(xyz,flow; filename::String)
   savefig(p,filename)
 end
 
-function plot_1dprofile_prim(xyz,flow,gridrange::Tuple; filename::String)
+function plot_1dprofile_prim(xyz,flow;gridrange::Tuple, filename::String)
   @assert length(xyz)==length(flow[:,1])
 
   if size(flow,2)==5
-    fp  = conv2prim(flow,size(flow))
+    fp  = VarsConverter.conv2prim(flow,size(flow))
   elseif size(flow,2)==6
     fp  = flow
   end
@@ -60,7 +60,7 @@ function plot_1dprofile_conv(xyz,flow; filename::String)
   p   = plot(p1,p2,p3,p4,p5,pn,layout=(2,3),size=(1000,600),legend=false)
   savefig(p,filename)
 end
-function plot_1dprofile_conv(xyz,flow,gridrange::Tuple; filename::String)
+function plot_1dprofile_conv(xyz,flow ;gridrange::Tuple, filename::String)
   @assert length(xyz)==length(flow[:,1])
 
   p1  = plot(flow[:,1],xyz,xlabel="ρ")

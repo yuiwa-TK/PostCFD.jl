@@ -12,7 +12,7 @@ function plot_2dprofile_prim(grid,flow; filename::String,
 
     nv = size(flow,3)
     if     nv==5
-        fp  = conv2prim(flow,size(flow))
+        fp  = VarsConverter.conv2prim(flow,size(flow))
     elseif nv==6
         fp  = flow
     end

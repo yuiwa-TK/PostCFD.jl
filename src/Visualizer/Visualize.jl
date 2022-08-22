@@ -1,8 +1,3 @@
-"""
-    Visualizer
-
-Flow & Grid Visualization
-"""
 module Visualizer
 
 using Reexport
@@ -11,7 +6,8 @@ using Reexport
 # export
 
 # 
-include("../BasicFuncsContainer/conservative2primitive.jl") #
+include("../VarsConverter/ConvertVars.jl")
+using .VarsConverter
 include("./plot_profile_1d.jl")
 include("./plot_profile_2d.jl")
 
