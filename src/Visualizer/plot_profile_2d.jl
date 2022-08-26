@@ -28,4 +28,6 @@ function plot_2dprofile_prim(grid,flow; filename::String,
         color=:lightrainbow)
     # display(p)
     savefig(p,filename)
+
+    return (;p1,p2,p3,p4,p5,p6)
 end

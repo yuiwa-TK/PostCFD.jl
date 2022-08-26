@@ -20,6 +20,9 @@ function plot_1dprofile_prim(xyz,flow; filename::String)
   p6  = plot(fp[:,6],xyz,xlabel="P")
   p   = plot(p1,p2,p3,p4,p5,p6,layout=(2,3),size=(1000,600),legend=false)
   savefig(p,filename)
+
+  
+  return (;p1,p2,p3,p4,p5,p6)
 end
 
 function plot_1dprofile_prim(xyz,flow;gridrange::Tuple, filename::String)
@@ -39,6 +42,8 @@ function plot_1dprofile_prim(xyz,flow;gridrange::Tuple, filename::String)
   p6  = plot(fp[:,6],xyz,xlabel="P")
   p   = plot(p1,p2,p3,p4,p5,p6,layout=(2,3),yrange=gridrange, size=(1000,600),legend=false)
   savefig(p,filename)
+
+  return (;p1,p2,p3,p4,p5,p6)
 end
 
 """
@@ -59,6 +64,8 @@ function plot_1dprofile_conv(xyz,flow; filename::String)
   pn  = plot()
   p   = plot(p1,p2,p3,p4,p5,pn,layout=(2,3),size=(1000,600),legend=false)
   savefig(p,filename)
+
+  return (;p1,p2,p3,p4,p5)
 end
 function plot_1dprofile_conv(xyz,flow ;gridrange::Tuple, filename::String)
   @assert length(xyz)==length(flow[:,1])
@@ -71,4 +78,6 @@ function plot_1dprofile_conv(xyz,flow ;gridrange::Tuple, filename::String)
   pn  = plot()
   p   = plot(p1,p2,p3,p4,p5,pn,layout=(2,3),yrange=gridrange, size=(1000,600),legend=false)
   savefig(p,filename)
+
+  return (;p1,p2,p3,p4,p5)
 end
