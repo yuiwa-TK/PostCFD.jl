@@ -35,7 +35,7 @@ end
 function writefiles(filename::String,q::Array{T},params::Array{T},nc::Int; mode::String) where T
   @show mode
   if mode == "restart"
-    return write_restart_double(filename,q,params,nc)
+    return write_restart(filename,q,params,nc)
   end
 end
 
