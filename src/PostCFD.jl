@@ -18,4 +18,8 @@ include("FileWriter/Writefiles.jl")
 include("Visualizer/Visualize.jl")
 @reexport using .Visualizer
 
+include("FortranFileManeger/Manage_fortranfiles.jl")
+@reexport using .FortranFileWriter
+@reexport using .FortranFileReader
+
 end # module
