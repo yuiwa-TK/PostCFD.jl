@@ -2,6 +2,9 @@ module VarsConverter
 
 include("./conservative2primitive.jl")
 
+include("./slice_grid.jl")
+include("./slice_flow.jl")
+
 using Reexport
 export convertvars
 
@@ -16,7 +19,6 @@ function convertvars(Inputs; options, mode::AbstractString)
     if mode=="conv2prim"
        Outputs= conv2prim(Inputs,options)
     end
-
     return Outputs
 end
 
