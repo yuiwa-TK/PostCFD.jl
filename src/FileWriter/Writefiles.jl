@@ -2,6 +2,7 @@ module FileWriter
 
 include("./write_flow.jl")
 include("./write_grid.jl")
+include("./write_function.jl")
 
 export writefiles
 
