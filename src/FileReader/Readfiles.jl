@@ -5,6 +5,7 @@ include("./read_flow.jl")
 include("./read_qave.jl")
 include("./read_divided.jl")
 include("./read_header.jl")
+include("./read_function.jl")
 
 export readfiles
 
