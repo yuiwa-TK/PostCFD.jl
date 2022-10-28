@@ -21,7 +21,7 @@ function read_uns(filename::AbstractString)
         aa=read!(io,dumstr)
         read!(io,idum2)
         @show read!(io,ngridpoints)
-        qall = Array{Float32}(undef,(nvar[1],ngridpoints[1]))
+        qall = Array{Float32}(undef,(ngridpoints[1],nvar[1]))
         read!(io,qall)
         read!(io,idum1)
     end
