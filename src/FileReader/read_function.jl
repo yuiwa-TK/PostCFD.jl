@@ -17,7 +17,7 @@ function read_function_single(filename::String)
 end
 
 function read_function_double(filename::String)
-    @show filename,nvar
+    @show filename
     # settings ==============================================
     dims = Array{Int32}(undef,(4))
     qall = 0
