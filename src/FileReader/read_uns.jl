@@ -21,6 +21,11 @@ function read_uns(filename::AbstractString)
         aa=read!(io,dumstr)
         read!(io,idum2)
         @show read!(io,ngridpoints)
+        if nvar[1]==0
+            # nvar==0ならdumstr(namelist of functions)をskipする
+            println("nvar=0 is detected. nvar is reset as 5 (to read q file)")
+            nvar[1]=5
+        end
         qall = Array{Float32}(undef,(ngridpoints[1],nvar[1]))
         read!(io,qall)
         read!(io,idum1)
