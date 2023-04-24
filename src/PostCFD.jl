@@ -14,6 +14,10 @@ include("FileReader/Readfiles.jl")
 include("FileWriter/Writefiles.jl")
 @reexport using .FileWriter
 
+# File Convert
+include("FileConverter/Convertfiles.jl")
+@reexport using .FileConverter
+
 # Visualization
 include("Visualizer/Visualize.jl")
 @reexport using .Visualizer

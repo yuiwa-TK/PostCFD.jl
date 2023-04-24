@@ -79,3 +79,37 @@ function read_restart(filename)
     end
     return qall
 end
+
+
+"""
+    dim,param = read_flow_params(filename::AbstractString)
+
+returns the dimension and parameter of flowfile written in pl3d format.
+"""
+function read_flow_params(filename::AbstractString; precision)
+    println("Reading flow params")
+    @show filename
+
+    if precision == "single"
+        dims    = Array{Int32}(undef,(3))
+        params  = Array{Float32}(undef,(4))
+    
+        open(filename,"r") do io
+            read!(io,dims)
+            read!(io,params)
+        end
+        return dims,Float32.(params)
+
+    elseif precision=="double"
+        dims    = Array{Int32}(undef,(3))
+        params  = Array{Float64}(undef,(3))
+        nc      = Array{Int32}(undef,(1))
+        open(filename,"r") do io
+            read!(io,dims)
+            read!(io,params)
+            read!(io,nc)
+            params=append!(params, nc)
+        end
+        return dims, Float32.(params)
+    end
+end

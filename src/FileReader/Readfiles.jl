@@ -36,6 +36,7 @@ mode ∈ [grid (=grid_double),
         divided_flow_slice
 """
 function readfiles(filename::String; mode::String)
+    println("Readfiles...")
     @show mode
     
     # Grid data
@@ -61,6 +62,9 @@ function readfiles(filename::String; mode::String)
     # 199 Statistics
     elseif mode == "stats" || mode == "stats_v2"
         return read_statistics(filename;mode=2)
+        
+    elseif mode == "params"
+        return read_flow_params(filename)
 
     # normal .dat file with header
     elseif mode == "header"
