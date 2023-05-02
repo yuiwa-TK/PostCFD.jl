@@ -98,8 +98,9 @@ function read_flow_params(filename::AbstractString; precision)
             read!(io,dims)
             read!(io,params)
         end
+        println("Mach:", params[1], "AoA:",params[2],"Time:",params[3],"Re",params[4])
         return dims,Float32.(params)
-
+        
     elseif precision=="double"
         dims    = Array{Int32}(undef,(3))
         params  = Array{Float64}(undef,(3))
@@ -108,8 +109,9 @@ function read_flow_params(filename::AbstractString; precision)
             read!(io,dims)
             read!(io,params)
             read!(io,nc)
-            params=append!(params, nc)
+            append!(params, nc);
         end
+        println("Mach:", params[1], "AoA:",params[2],"Time:",params[3],"nc",params[4])
         return dims, Float32.(params)
     end
 end
