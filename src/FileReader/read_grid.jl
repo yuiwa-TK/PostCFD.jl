@@ -61,9 +61,9 @@ end
 automatically determines the file type written in pl3d format.
 """
 function read_grid_auto(filename::AbstractString)
-    Nb_INT32 = 8
-    NBF_FLOAT64 = 16
-    NBF_FLOAT32 = 8
+    Nb_INT32 = 4
+    NBF_FLOAT64 = 8
+    NBF_FLOAT32 = 4
 
     Npoints = prod(read_grid_dims(filename))
     Nb_file = filesize(filename)
