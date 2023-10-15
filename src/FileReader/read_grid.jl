@@ -19,7 +19,6 @@ function read_grid_double(filename::AbstractString)
     end
     return xyz
 end
-read_grid = read_grid_double #alias
 
 """
 "SIGLE PRECISION GRID"
@@ -54,6 +53,28 @@ function read_grid_dims(filename::AbstractString)
     open(filename,"r") do io
         read!(io,dims)
     end
-    @show dims
     return dims
 end
+
+"""
+    read_grid_auto(filename::AbstractString)
+automatically determines the file type written in pl3d format.
+"""
+function read_grid_auto(filename::AbstractString)
+    Nb_INT32 = 4
+    NBF_FLOAT64 = 8
+    NBF_FLOAT32 = 4
+
+    Npoints = prod(read_grid_dims(filename))
+    Nb_file = filesize(filename)
+
+    if Nb_file == 3*Nb_INT32 + 3*Npoints*NBF_FLOAT32
+        return read_grid_single(filename)
+    elseif Nb_file == 3*Nb_INT32 + 3*Npoints*NBF_FLOAT64
+        return read_grid_double(filename)
+    else
+        @error println("$filename is not written in pl3d format.")
+        return NaN
+    end
+end
+read_grid=read_grid_auto
