@@ -68,9 +68,9 @@ function read_grid_auto(filename::AbstractString)
     Npoints = prod(read_grid_dims(filename))
     Nb_file = filesize(filename)
 
-    if Nb_file == 3*Nb_INT32 + Npoints*NBF_FLOAT32
+    if Nb_file == 3*Nb_INT32 + 3*Npoints*NBF_FLOAT32
         return read_grid_single(filename)
-    elseif Nb_file == 3*Nb_INT32 + Npoints*NBF_FLOAT64
+    elseif Nb_file == 3*Nb_INT32 + 3*Npoints*NBF_FLOAT64
         return read_grid_double(filename)
     else
         @error println("$filename is not written in pl3d format.")
