@@ -33,3 +33,33 @@ function read_function_double(filename::String)
     end
     return qall
 end
+
+function read_function_dims(filename::String)
+    dims = Array{Int32}(undef,(4))
+    open(filename,"r") do io 
+        @show read!(io,dims)
+    end
+    return dims
+end
+
+"""
+    read_flow_auto(filename::AbstractString)
+automatically determines the file type written in pl3d format.
+"""
+function read_function_auto(filename::AbstractString)
+    Nb_INT32 = 4
+    NBF_FLOAT64 = 8
+    NBF_FLOAT32 = 4
+    Nvars = prod(read_function_dims(filename))
+    Nb_file = filesize(filename)
+
+    if Nb_file == 3*Nb_INT32 + Nvars*NBF_FLOAT32
+        return read_function_single(filename)
+    elseif Nb_file == 3*Nb_INT32 + Nvars*NBF_FLOAT64
+        return read_function_double(filename)
+    else
+        @error println("$filename is not written in pl3d format or written with record marker .")
+        return NaN
+    end
+end
+read_function=read_function_auto

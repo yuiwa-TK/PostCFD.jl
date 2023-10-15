@@ -73,7 +73,7 @@ function read_grid_auto(filename::AbstractString)
     elseif Nb_file == 3*Nb_INT32 + 3*Npoints*NBF_FLOAT64
         return read_grid_double(filename)
     else
-        @error println("$filename is not written in pl3d format.")
+        @error println("$filename is not written in pl3d format or written with record marker .")
         return NaN
     end
 end
