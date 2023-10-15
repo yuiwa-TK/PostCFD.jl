@@ -142,7 +142,7 @@ function read_flow_auto(filename::AbstractString)
     Nb_INT32 = 32
     NBF_FLOAT64 = 64
     NBF_FLOAT32 = 32
-    Npoints = sum(read_flow_dims(filename))
+    Npoints = prod(read_flow_dims(filename))
     Nb_file = filesize(filename)
 
     if Nb_file == 3*Nb_INT32 + Npoints*NBF_FLOAT32
