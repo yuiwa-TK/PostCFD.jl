@@ -88,15 +88,17 @@ end
 
 
 """
-    dim,param = read_flow_params(filename::AbstractString)
+    dim,param = read_flow_params(filename::AbstractString; type)
 
 returns the dimension and parameter of flowfile written in pl3d format.
+
+"type" : choose from "single", "double", and "restart"
 """
-function read_flow_params(filename::AbstractString; precision)
+function read_flow_params(filename::AbstractString; type)
     println("Reading flow params")
     @show filename
 
-    if precision == "single"
+    if type == "single"
         dims    = Array{Int32}(undef,(3))
         params  = Array{Float32}(undef,(4))
     
@@ -105,9 +107,21 @@ function read_flow_params(filename::AbstractString; precision)
             read!(io,params)
         end
         println("Mach:", params[1], "| AoA:",params[2],"| Time:",params[3],"| Re",params[4])
-        return dims,Float32.(params)
+        return dims,params
         
-    elseif precision=="double"
+    elseif type=="double"
+        dims    = Array{Int32}(undef,(3))
+        params  = Array{Float32}(undef,(3))
+        nc      = Array{Int32}(undef,(1))
+        open(filename,"r") do io
+            read!(io,dims)
+            read!(io,params)
+            read!(io,nc)
+            append!(params, nc);
+        end
+        println("Mach:", params[1], "| AoA:",params[2],"| Time:",params[3],"| nc",params[4])
+        return dims, params
+    elseif type=="restart"
         dims    = Array{Int32}(undef,(3))
         params  = Array{Float64}(undef,(3))
         nc      = Array{Int32}(undef,(1))
@@ -118,7 +132,7 @@ function read_flow_params(filename::AbstractString; precision)
             append!(params, nc);
         end
         println("Mach:", params[1], "| AoA:",params[2],"| Time:",params[3],"| nc",params[4])
-        return dims, Float32.(params)
+        return dims, params
     end
 end
 
