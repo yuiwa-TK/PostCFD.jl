@@ -17,6 +17,8 @@ function read_flow_double(filename::AbstractString)
     open(filename,"r") do io 
         @show read!(io,dims)
         @show read!(io,params)
+        @show read!(io,dims)
+        @show read!(io,params)
         jmax = dims[1]
         kmax = dims[2]
         lmax = dims[3]
