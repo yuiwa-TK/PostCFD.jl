@@ -1,7 +1,9 @@
 # 3D flow
-function conv2prim(qc,dim::Tuple{Int,Int,Int,Int})
+function conv2prim(qc,dim::Tuple{Int,Int,Int,Int};verbose=2)
   @assert dim == size(qc)
-  println("3D flow")
+  if verbose>=2
+    println("3D flow")
+  end
   jmax,kmax,lmax,nvar = dim
 
   gamma  = 1.4
@@ -34,7 +36,9 @@ end
 # 2D flow
 function conv2prim(qc,dim::Tuple{Int,Int,Int})
   @assert dim == size(qc)
-  println("2D flow")
+  if verbose>=2
+    println("2D flow")
+  end
   jmax,lmax,nvar = dim
 
   gamma  = 1.4
@@ -67,7 +71,9 @@ end
 # 1D flow
 function conv2prim(qc,dim::Tuple{Int,Int})
   @assert dim == size(qc)
-  println("1D flow")
+  if verbose>=2
+    println("1D flow")
+  end
   jmax,nvar = dim
 
   gamma  = 1.4
