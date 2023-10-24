@@ -4,13 +4,17 @@ using Printf
 read a file with xyz format written in "little-endian" & "stream".  
 This function returns xyz=Array{Float64}(jmax,kmax,lmax,3).
 """
-function read_grid_double(filename::AbstractString)
-    @show filename
+function read_grid_double(filename::AbstractString; verbose=2)
+    if verbose>=1
+        @info filename
+    end
     xyz = 0
     dims= Array{Int32}(undef,(3))
     open(filename,"r") do io 
         read!(io,dims)
-        @show dims
+        if verbose>=2
+            @show dims
+        end
         jmax = dims[1]
         kmax = dims[2]
         lmax = dims[3]
@@ -25,13 +29,17 @@ end
 read a file with xyz format written in "little-endian" & "stream".  
 This function returns xyz=Array{Float32}(jmax,kmax,lmax,3).
 """
-function read_grid_single(filename::AbstractString)
-    @show filename
+function read_grid_single(filename::AbstractString;verbose=2)
+    if verbose>=1
+        @info filename
+    end
     xyz = 0
     dims= Array{Int32}(undef,(3))
     open(filename,"r") do io 
         read!(io,dims)
-        @show dims
+        if verbose>=2
+            @show dims
+        end
         jmax = dims[1]
         kmax = dims[2]
         lmax = dims[3]
@@ -47,8 +55,10 @@ read_grid_fv = read_grid_single
 Read grid size.
 This program return Tuple:(jmax,kmax,lmax)
 """
-function read_grid_dims(filename::AbstractString)
-    @show filename
+function read_grid_dims(filename::AbstractString;verbose=2)
+    if verbose>=1
+        @info filename
+    end
     dims = Array{Int32}(undef,(3))
     open(filename,"r") do io
         read!(io,dims)
@@ -60,18 +70,18 @@ end
     read_grid_auto(filename::AbstractString)
 automatically determines the file type written in pl3d format.
 """
-function read_grid_auto(filename::AbstractString)
+function read_grid_auto(filename::AbstractString;verbose=2)
     Nb_INT32 = 4
     NBF_FLOAT64 = 8
     NBF_FLOAT32 = 4
 
-    Npoints = prod(read_grid_dims(filename))
+    Npoints = prod(read_grid_dims(filename;verbose=verbose))
     Nb_file = filesize(filename)
 
     if Nb_file == 3*Nb_INT32 + 3*Npoints*NBF_FLOAT32
-        return read_grid_single(filename)
+        return read_grid_single(filename;verbose=verbose)
     elseif Nb_file == 3*Nb_INT32 + 3*Npoints*NBF_FLOAT64
-        return read_grid_double(filename)
+        return read_grid_double(filename;verbose=verbose)
     else
         @error println("$filename is not written in pl3d format or written with record marker .")
         return NaN
