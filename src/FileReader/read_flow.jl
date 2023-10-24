@@ -17,9 +17,11 @@ function read_flow_double(filename::AbstractString; verbose=2)
     qall    = 0.0
 
     open(filename,"r") do io 
+        read!(io,dims)
+        read!(io,params)
         if verbose>=2
-            @show read!(io,dims)
-            @show read!(io,params)
+            @show dims
+            @show params
         end
         jmax = dims[1]
         kmax = dims[2]
@@ -50,9 +52,11 @@ function read_flow_single(filename::AbstractString;verbose=2)
     qall    = 0.0
    
     open(filename,"r") do io 
+        read!(io,dims)
+        read!(io,params)
         if verbose>=2
-            @show read!(io,dims)
-            @show read!(io,params)
+            @show dims
+            @show params
         end
         jmax = dims[1]
         kmax = dims[2]
@@ -83,10 +87,13 @@ function read_restart(filename::AbstractString;verbose=2)
     qall    = 0.0
    
     open(filename,"r") do io 
+        read!(io,dims)
+        read!(io,params)
+        read!(io,nc) 
         if verbose>=2
-            @show read!(io,dims)
-            @show read!(io,params)
-            @show read!(io,nc)
+            @show dims
+            @show params
+            @show nc
         end
         jmax = dims[1]
         kmax = dims[2]
