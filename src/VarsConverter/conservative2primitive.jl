@@ -34,7 +34,7 @@ function conv2prim(qc,dim::Tuple{Int,Int,Int,Int};verbose=2)
 end
 
 # 2D flow
-function conv2prim(qc,dim::Tuple{Int,Int,Int})
+function conv2prim(qc,dim::Tuple{Int,Int,Int};verbose=2)
   @assert dim == size(qc)
   if verbose>=2
     println("2D flow")
@@ -69,7 +69,7 @@ function conv2prim(qc,dim::Tuple{Int,Int,Int})
 end
 
 # 1D flow
-function conv2prim(qc,dim::Tuple{Int,Int})
+function conv2prim(qc,dim::Tuple{Int,Int};verbose=2)
   @assert dim == size(qc)
   if verbose>=2
     println("1D flow")
