@@ -53,9 +53,9 @@ function read_function_auto(filename::AbstractString)
     Nvars = prod(read_function_dims(filename))
     Nb_file = filesize(filename)
 
-    if Nb_file == 3*Nb_INT32 + Nvars*NBF_FLOAT32
+    if Nb_file == 4*Nb_INT32 + Nvars*NBF_FLOAT32
         return read_function_single(filename)
-    elseif Nb_file == 3*Nb_INT32 + Nvars*NBF_FLOAT64
+    elseif Nb_file == 4*Nb_INT32 + Nvars*NBF_FLOAT64
         return read_function_double(filename)
     else
         @error println("$filename is not written in pl3d format or written with record marker .")
