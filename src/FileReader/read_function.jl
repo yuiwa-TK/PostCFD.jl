@@ -86,6 +86,8 @@ read_function=read_function_auto
 
 
 function read_function_specifyingvaribale(filename::String,idvar::Int; verbose=2)
+    NBF_FLOAT64 = 8
+    NBF_FLOAT32 = 4
     if verbose>=1
         @show filename
     end
@@ -96,7 +98,7 @@ function read_function_specifyingvaribale(filename::String,idvar::Int; verbose=2
         io   = open(filename,"r") 
         read!(io,dims)
         qvar = Array{Float32}(undef,(dims[1],dims[2],dims[3]))
-        Nb_skip = prod(@view dims[1:3])*(idvar-1)
+        Nb_skip = prod(@view dims[1:3])*(idvar-1)*NBF_FLOAT32
         skip(io,Nb_skip)
         read!(io,qvar)
         close(io)
@@ -105,7 +107,7 @@ function read_function_specifyingvaribale(filename::String,idvar::Int; verbose=2
         io   = open(filename,"r") 
         read!(io,dims)
         qvar = Array{Float64}(undef,(dims[1],dims[2],dims[3]))
-        Nb_skip = prod(@view dims[1:3])*(idvar-1)
+        Nb_skip = prod(@view dims[1:3])*(idvar-1)*NBF_FLOAT64
         skip(io,Nb_skip)
         read!(io,qvar)
         close(io)
