@@ -93,18 +93,18 @@ function read_function_specifyingvaribale(filename::String,idvar::Int; verbose=2
     dims = Array{Int32}(undef,(4))
 
     if tp=="single"
-        qvar = Array{Float32}(undef,(dims[1],dims[2],dims[3]))
         io   = open(filename,"r") 
         read!(io,dims)
+        qvar = Array{Float32}(undef,(dims[1],dims[2],dims[3]))
         Nb_skip = prod(@view dims[1:3])*(idvar-1)
         skip(io,Nb_skip)
         read!(io,qvar)
         close(io)
         return qvar
     elseif tp=="double"
-        qvar = Array{Float64}(undef,(dims[1],dims[2],dims[3]))
         io   = open(filename,"r") 
         read!(io,dims)
+        qvar = Array{Float64}(undef,(dims[1],dims[2],dims[3]))
         Nb_skip = prod(@view dims[1:3])*(idvar-1)
         skip(io,Nb_skip)
         read!(io,qvar)
