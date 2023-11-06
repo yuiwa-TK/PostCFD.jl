@@ -1,5 +1,7 @@
-function read_function_single(filename::String)
-    @show filename
+function read_function_single(filename::String; verbose=2)
+    if verbose<=1
+        @show filename
+    end
     # settings ==============================================
     dims = Array{Int32}(undef,(4))
     qall = 0
@@ -16,8 +18,10 @@ function read_function_single(filename::String)
     return qall
 end
 
-function read_function_double(filename::String)
-    @show filename
+function read_function_double(filename::String; verbose=2)
+    if verbose<=1
+        @show filename
+    end
     # settings ==============================================
     dims = Array{Int32}(undef,(4))
     qall = 0
@@ -34,27 +38,34 @@ function read_function_double(filename::String)
     return qall
 end
 
-function read_function_dims(filename::String)
+function read_function_dims(filename::String, verbose=2)
     dims = Array{Int32}(undef,(4))
     open(filename,"r") do io 
-        @show read!(io,dims)
+        read!(io,dims)
+    end
+    if verbose>=2
+        @info dims
     end
     return dims
 end
 
 
-function typeof_functionfile(filename::AbstractString)
+function typeof_functionfile(filename::AbstractString; verbose=2)
     Nb_INT32 = 4
     NBF_FLOAT64 = 8
     NBF_FLOAT32 = 4
-    Nvars = prod(read_function_dims(filename))
+    Nvars = prod(read_function_dims(filename, verbose=verbose))
     Nb_file = filesize(filename)
 
     if Nb_file == 4*Nb_INT32 + Nvars*NBF_FLOAT32
-        println("$filename is single format")
+        if verbose>=1
+            println("$filename is single format")
+        end
         return "single"
     elseif Nb_file == 4*Nb_INT32 + Nvars*NBF_FLOAT64
-        println("$filename is double format")
+        if verbose>=1
+            println("$filename is double format")
+        end
         return "double"
     else
         @error println("$filename is not written in pl3d format or written with record marker .")
@@ -66,17 +77,17 @@ end
     read_flow_auto(filename::AbstractString)
 automatically determines the file type written in pl3d format.
 """
-function read_function_auto(filename::AbstractString)
+function read_function_auto(filename::AbstractString, verbose=2)
     Nb_INT32 = 4
     NBF_FLOAT64 = 8
     NBF_FLOAT32 = 4
-    Nvars = prod(read_function_dims(filename))
+    Nvars = prod(read_function_dims(filename),verbose=0)
     Nb_file = filesize(filename)
 
     if Nb_file == 4*Nb_INT32 + Nvars*NBF_FLOAT32
-        return read_function_single(filename)
+        return read_function_single(filename, verbose=verbose)
     elseif Nb_file == 4*Nb_INT32 + Nvars*NBF_FLOAT64
-        return read_function_double(filename)
+        return read_function_double(filename, verbose=verbose)
     else
         @error println("$filename is not written in pl3d format or written with record marker .")
         return NaN
