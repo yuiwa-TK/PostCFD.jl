@@ -54,7 +54,7 @@ function typeof_functionfile(filename::AbstractString; verbose=2)
     Nb_INT32 = 4
     NBF_FLOAT64 = 8
     NBF_FLOAT32 = 4
-    Nvars = prod(read_function_dims(filename, verbose=verbose))
+    Nvars = prod(read_function_dims(filename; verbose=verbose))
     Nb_file = filesize(filename)
 
     if Nb_file == 4*Nb_INT32 + Nvars*NBF_FLOAT32
