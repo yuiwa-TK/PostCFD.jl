@@ -38,7 +38,7 @@ function read_function_double(filename::String; verbose=2)
     return qall
 end
 
-function read_function_dims(filename::String, verbose=2)
+function read_function_dims(filename::String; verbose=2)
     dims = Array{Int32}(undef,(4))
     open(filename,"r") do io 
         read!(io,dims)
