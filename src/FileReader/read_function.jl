@@ -81,7 +81,7 @@ function read_function_auto(filename::AbstractString; verbose=2)
     Nb_INT32 = 4
     NBF_FLOAT64 = 8
     NBF_FLOAT32 = 4
-    Nvars = prod(read_function_dims(filename);verbose=0)
+    Nvars = prod(read_function_dims(filename;verbose=0))
     Nb_file = filesize(filename)
 
     if Nb_file == 4*Nb_INT32 + Nvars*NBF_FLOAT32
