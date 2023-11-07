@@ -127,3 +127,47 @@ function read_function_specifyingvaribale(filename::String,idvar::Int; verbose=2
         return nothing
     end
 end
+
+function read_function_specifying_l_and_variable(filename::String,lid::Int, idvar::Int; verbose=2)
+    NBF_FLOAT64 = 8
+    NBF_FLOAT32 = 4
+    if verbose>=1
+        @show filename
+    end
+    tp = typeof_functionfile(filename)
+    dims = Array{Int32}(undef,(4))
+
+    if tp=="single"
+        io   = open(filename,"r") 
+        read!(io,dims)
+        qvar = Array{Float32}(undef,(dims[1],dims[2],1))
+        
+        # skip bytes for variable
+        Nb_skip = prod(@view dims[1:3])*(idvar-1)*NBF_FLOAT32
+        skip(io,Nb_skip)
+
+        # skip bytes for ldim
+        Nb_skip2 = prod(@view dims[1:2])*(lid-1)*NBF_FLOAT32
+        skip(io,Nb_skip2)
+        read!(io,qvar)
+        close(io)
+        return qvar
+    elseif tp=="double"
+        io   = open(filename,"r") 
+        read!(io,dims)
+        qvar = Array{Float64}(undef,(dims[1],dims[2],dims[3]))
+
+        # skip bytes for variable
+        Nb_skip = prod(@view dims[1:3])*(idvar-1)*NBF_FLOAT64
+        skip(io,Nb_skip)
+      
+        # skip bytes for ldim
+        Nb_skip2 = prod(@view dims[1:2])*(lid-1)*NBF_FLOAT64
+        skip(io,Nb_skip2)
+        read!(io,qvar)
+        close(io)
+        return qvar
+    else
+        return nothing
+    end
+end
