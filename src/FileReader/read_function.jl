@@ -128,6 +128,13 @@ function read_function_specifyingvaribale(filename::String,idvar::Int; verbose=2
     end
 end
 
+"""
+    fuction read_function_specifying_l_and_variable(filename::String,lid::Int, idvar::Int; verbose=2)
+reads the value of specified veriable and at l index.
+
+## i.e.)
+    read_function_specifying_l_and_variable(file, 10, 1) == read_function_auto(file)[:,:,10,1]
+"""
 function read_function_specifying_l_and_variable(filename::String,lid::Int, idvar::Int; verbose=2)
     NBF_FLOAT64 = 8
     NBF_FLOAT32 = 4
