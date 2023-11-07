@@ -88,3 +88,58 @@ function read_grid_auto(filename::AbstractString;verbose=2)
     end
 end
 read_grid=read_grid_auto
+
+
+function typeof_gridfile(filename::AbstractString; verbose=2)
+    Nb_INT32 = 4
+    NBF_FLOAT64 = 8
+    NBF_FLOAT32 = 4
+    Nvars = prod(read_grid_dims(filename; verbose=0))
+    Nb_file = filesize(filename)
+
+    if Nb_file == 4*Nb_INT32 + Nvars*NBF_FLOAT32
+        if verbose>=1
+            println("$filename is single format")
+        end
+        return "single"
+    elseif Nb_file == 4*Nb_INT32 + Nvars*NBF_FLOAT64
+        if verbose>=1
+            println("$filename is double format")
+        end
+        return "double"
+    else
+        @error println("$filename is not written in pl3d format or written with record marker .")
+    end
+    return 0
+end
+function read_grid_specifying_xyz(filename::String,iddir::Int; verbose=2)
+    NBF_FLOAT64 = 8
+    NBF_FLOAT32 = 4
+    if verbose>=1
+        @show filename
+    end
+    tp = typeof_gridfile(filename)
+    dims = Array{Int32}(undef,(4))
+
+    if tp=="single"
+        io   = open(filename,"r") 
+        read!(io,dims)
+        qvar = Array{Float32}(undef,(dims[1],dims[2],dims[3]))
+        Nb_skip = prod(@view dims[1:3])*(iddir-1)*NBF_FLOAT32
+        skip(io,Nb_skip)
+        read!(io,qvar)
+        close(io)
+        return qvar
+    elseif tp=="double"
+        io   = open(filename,"r") 
+        read!(io,dims)
+        qvar = Array{Float64}(undef,(dims[1],dims[2],dims[3]))
+        Nb_skip = prod(@view dims[1:3])*(iddir-1)*NBF_FLOAT64
+        skip(io,Nb_skip)
+        read!(io,qvar)
+        close(io)
+        return qvar
+    else
+        return nothing
+    end
+end
