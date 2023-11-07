@@ -97,12 +97,12 @@ function typeof_gridfile(filename::AbstractString; verbose=2)
     Nvars = prod(read_grid_dims(filename; verbose=0))
     Nb_file = filesize(filename)
 
-    if Nb_file == 4*Nb_INT32 + Nvars*NBF_FLOAT32
+    if Nb_file == 3*Nb_INT32 + Nvars*NBF_FLOAT32
         if verbose>=1
             println("$filename is single format")
         end
         return "single"
-    elseif Nb_file == 4*Nb_INT32 + Nvars*NBF_FLOAT64
+    elseif Nb_file ==3*Nb_INT32 + Nvars*NBF_FLOAT64
         if verbose>=1
             println("$filename is double format")
         end
