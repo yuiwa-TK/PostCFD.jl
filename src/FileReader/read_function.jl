@@ -1,5 +1,5 @@
 function read_function_single(filename::String; verbose=2)
-    if verbose<=1
+    if verbose>=1
         @show filename
     end
     # settings ==============================================
@@ -19,7 +19,7 @@ function read_function_single(filename::String; verbose=2)
 end
 
 function read_function_double(filename::String; verbose=2)
-    if verbose<=1
+    if verbose>=1
         @show filename
     end
     # settings ==============================================
@@ -102,7 +102,7 @@ function read_function_specifyingvaribale(filename::String,idvar::Int; verbose=2
     if verbose>=1
         @show filename
     end
-    tp = typeof_functionfile(filename)
+    tp = typeof_functionfile(filename; verbose=0)
     dims = Array{Int32}(undef,(4))
 
     if tp=="single"
@@ -141,7 +141,7 @@ function read_function_specifying_l_and_variable(filename::String,lid::Int, idva
     if verbose>=1
         @show filename
     end
-    tp = typeof_functionfile(filename)
+    tp = typeof_functionfile(filename; verbose=0)
     dims = Array{Int32}(undef,(4))
 
     if tp=="single"
