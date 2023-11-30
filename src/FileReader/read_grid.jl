@@ -119,7 +119,7 @@ function read_grid_specifying_xyz(filename::String,iddir::Int; verbose=2)
         @show filename
     end
     tp = typeof_gridfile(filename)
-    dims = Array{Int32}(undef,(4))
+    dims = Array{Int32}(undef,(3))
 
     if tp=="single"
         io   = open(filename,"r") 
