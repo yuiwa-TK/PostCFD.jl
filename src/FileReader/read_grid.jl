@@ -125,7 +125,7 @@ function read_grid_specifying_xyz(filename::String,iddir::Int; verbose=2)
         io   = open(filename,"r") 
         read!(io,dims)
         qvar = Array{Float32}(undef,(dims[1],dims[2],dims[3]))
-        Nb_skip = prod(@view dims[1:3])*(iddir-1)*NBF_FLOAT32
+        Nb_skip = prod(@view dims[1:2])*(iddir-1)*NBF_FLOAT32
         skip(io,Nb_skip)
         read!(io,qvar)
         close(io)
@@ -134,7 +134,7 @@ function read_grid_specifying_xyz(filename::String,iddir::Int; verbose=2)
         io   = open(filename,"r") 
         read!(io,dims)
         qvar = Array{Float64}(undef,(dims[1],dims[2],dims[3]))
-        Nb_skip = prod(@view dims[1:3])*(iddir-1)*NBF_FLOAT64
+        Nb_skip = prod(@view dims[1:2])*(iddir-1)*NBF_FLOAT64
         skip(io,Nb_skip)
         read!(io,qvar)
         close(io)
