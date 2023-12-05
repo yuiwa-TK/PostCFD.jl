@@ -1,6 +1,7 @@
 module VarsConverter
 
 include("./conservative2primitive.jl")
+include("./velocity2vorticity.jl")
 
 include("./slice_grid.jl")
 include("./slice_flow.jl")
