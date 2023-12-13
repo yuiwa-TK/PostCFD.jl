@@ -33,7 +33,7 @@ function prim2conv(qp,dim::Tuple{Int,Int,Int};verbose=2)
 end
 
 # 1D flow
-function prim2conv(qp,dim::Tuple{Int,Int,Int};verbose=2)
+function prim2conv(qp,dim::Tuple{Int,Int};verbose=2)
     @assert dim == size(qp)
     if verbose>=2
       println("1D flow")
