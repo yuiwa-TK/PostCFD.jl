@@ -170,7 +170,7 @@ function read_grid_specifying_xyz_rect(filename::String,iddir::Int; verbose=2)
             trimed_dims= dims
             idgs=[1,1,1:dims[3]]
         end
-        Nb_skip = prod(@view dims[1:2])*(iddir-1)*NBF_FLOAT32
+        Nb_skip = prod(@view dims[1:3])*(iddir-1)*NBF_FLOAT32
         skip(io,Nb_skip)
         qvar = Array{Float32}(undef,trimed_dims...)
         read!(io,qvar)
@@ -190,13 +190,25 @@ function read_grid_specifying_xyz_rect(filename::String,iddir::Int; verbose=2)
             trimed_dims= dims
             idgs=[1,1,1:dims[3]]
         end
-        Nb_skip = prod(@view dims[1:2])*(iddir-1)*NBF_FLOAT64
+        Nb_skip = prod(@view dims[1:3])*(iddir-1)*NBF_FLOAT64
         skip(io,Nb_skip)
         qvar = Array{Float64}(undef,trimed_dims...)
         read!(io,qvar)
         close(io)
         return Base.getindex(qvar, idgs...)
     else
+        return nothing
+    end
+end
+function read_grid_specifying_xyz_rect(filename::String,iddir::String; verbose=2)
+    if iddir in ["x", "xdir","x-dir"]
+        read_grid_specifying_xyz_rect(filename,1; verbose=verbose)
+    elseif iddir in ["y", "ydir","y-dir"]
+        read_grid_specifying_xyz_rect(filename,2; verbose=verbose)
+    elseif iddir in ["z","zdir","z-dir"]
+        read_grid_specifying_xyz_rect(filename,3; verbose=verbose)
+    else
+        println("invalid iddir. Try use of {x, y, z}::String or {1, 2, 3}::Int as the second input.")
         return nothing
     end
 end
