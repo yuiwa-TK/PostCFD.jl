@@ -143,3 +143,52 @@ function read_grid_specifying_xyz(filename::String,iddir::Int; verbose=2)
         return nothing
     end
 end
+
+"""
+read_grid_specifying_xyz_rect(filename::String,iddir::Int; verbose=2) returns the vector containing the data of specified direction assuming the rectangular cell.
+"""
+function read_grid_specifying_xyz_rect(filename::String,iddir::Int; verbose=2)
+    NBF_FLOAT64 = 8
+    NBF_FLOAT32 = 4
+    if verbose>=1
+        @show filename
+    end
+    tp = typeof_gridfile(filename)
+    dims = Array{Int32}(undef,(3))
+
+    if tp=="single"
+        io   = open(filename,"r")
+        read!(io,dims)
+        if iddir == 1
+            trimed_dims= (dims[1], 1, 1)
+        elseif iddir == 2
+            trimed_dims= (1, dims[2], 1)
+        elseif iddir == 3
+            trimed_dims= (1, 1, dims[3])
+        end    
+        Nb_skip = prod(@view dims[1:2])*(iddir-1)*NBF_FLOAT32
+        skip(io,Nb_skip)
+        qvar = Array{Float32}(undef,trimed_dims)
+        read!(io,qvar)
+        close(io)
+        return qvar
+    elseif tp=="double"
+        io   = open(filename,"r")
+        read!(io,dims)
+        if iddir == 1
+            trimed_dims= (dims[1], 1, 1)
+        elseif iddir == 2
+            trimed_dims= (1, dims[2], 1)
+        elseif iddir == 3
+            trimed_dims= (1, 1, dims[3])
+        end
+        Nb_skip = prod(@view dims[1:2])*(iddir-1)*NBF_FLOAT64
+        skip(io,Nb_skip)
+        qvar = Array{Float64}(undef,trimed_dims)
+        read!(io,qvar)
+        close(io)
+        return qvar
+    else
+        return nothing
+    end
+end
