@@ -159,35 +159,43 @@ function read_grid_specifying_xyz_rect(filename::String,iddir::Int; verbose=2)
     if tp=="single"
         io   = open(filename,"r")
         read!(io,dims)
+        idgs=similar(dims);trimed_dims=similar(dims)
         if iddir == 1
-            trimed_dims= (dims[1], 1, 1)
+            trimed_dims= [dims[1], 1, 1]
+            idgs=[1:dims[1],1,1]
         elseif iddir == 2
-            trimed_dims= (1, dims[2], 1)
+            trimed_dims= [dims[1], dims[2], 1]
+            idgs=[1,1:dims[2],1]
         elseif iddir == 3
-            trimed_dims= (1, 1, dims[3])
-        end    
+            trimed_dims= dims
+            idgs=[1,1,1:dims[3]]
+        end
         Nb_skip = prod(@view dims[1:2])*(iddir-1)*NBF_FLOAT32
         skip(io,Nb_skip)
-        qvar = Array{Float32}(undef,trimed_dims)
+        qvar = Array{Float32}(undef,trimed_dims...)
         read!(io,qvar)
         close(io)
-        return qvar
+        return Base.getindex(qvar, idgs...)
     elseif tp=="double"
         io   = open(filename,"r")
         read!(io,dims)
+        idgs=similar(dims);trimed_dims=similar(dims)
         if iddir == 1
-            trimed_dims= (dims[1], 1, 1)
+            trimed_dims= [dims[1], 1, 1]
+            idgs=[1:dims[1],1,1]
         elseif iddir == 2
-            trimed_dims= (1, dims[2], 1)
+            trimed_dims= [dims[1], dims[2], 1]
+            idgs=[1,1:dims[2],1]
         elseif iddir == 3
-            trimed_dims= (1, 1, dims[3])
+            trimed_dims= dims
+            idgs=[1,1,1:dims[3]]
         end
         Nb_skip = prod(@view dims[1:2])*(iddir-1)*NBF_FLOAT64
         skip(io,Nb_skip)
-        qvar = Array{Float64}(undef,trimed_dims)
+        qvar = Array{Float64}(undef,trimed_dims...)
         read!(io,qvar)
         close(io)
-        return qvar
+        return Base.getindex(qvar, idgs...)
     else
         return nothing
     end
