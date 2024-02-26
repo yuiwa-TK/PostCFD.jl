@@ -4,7 +4,7 @@ using Printf
 read a file with xyz format written in "little-endian" & "stream".  
 This function returns xyz=Array{Float64}(jmax,kmax,lmax,3).
 """
-function read_grid_double(filename::AbstractString; verbose=2)
+function read_grid_double(filename::AbstractString; verbose=2,endian="little")
     if verbose>=1
         @info filename
     end
@@ -21,7 +21,11 @@ function read_grid_double(filename::AbstractString; verbose=2)
         xyz = Array{Float64}(undef,(jmax,kmax,lmax,3))
         read!(io,xyz)
     end
-    return xyz
+    if endian=="little"
+        return xyz
+    else
+        return ntoh.(xyz)
+    end
 end
 
 """
@@ -29,7 +33,7 @@ end
 read a file with xyz format written in "little-endian" & "stream".  
 This function returns xyz=Array{Float32}(jmax,kmax,lmax,3).
 """
-function read_grid_single(filename::AbstractString;verbose=2)
+function read_grid_single(filename::AbstractString;verbose=2,endian="little")
     if verbose>=1
         @info filename
     end
@@ -46,7 +50,11 @@ function read_grid_single(filename::AbstractString;verbose=2)
         xyz = Array{Float32}(undef,(jmax,kmax,lmax,3))
         read!(io,xyz)
     end
-    return xyz
+    if endian=="little"
+        return xyz
+    else
+        return ntoh.(xyz)
+    end
 end
 read_grid_fv = read_grid_single
 
@@ -55,7 +63,7 @@ read_grid_fv = read_grid_single
 Read grid size.
 This program return Tuple:(jmax,kmax,lmax)
 """
-function read_grid_dims(filename::AbstractString;verbose=2)
+function read_grid_dims(filename::AbstractString;verbose=2, endian="little")
     if verbose>=1
         @info filename
     end
@@ -63,14 +71,18 @@ function read_grid_dims(filename::AbstractString;verbose=2)
     open(filename,"r") do io
         read!(io,dims)
     end
-    return dims
+    if endian=="little"
+        return dims
+    else
+        return ntoh.(dims)
+    end
 end
 
 """
     read_grid_auto(filename::AbstractString)
 automatically determines the file type written in pl3d format.
 """
-function read_grid_auto(filename::AbstractString;verbose=2)
+function read_grid_auto(filename::AbstractString;verbose=2,endian="little")
     Nb_INT32 = 4
     NBF_FLOAT64 = 8
     NBF_FLOAT32 = 4
@@ -79,9 +91,9 @@ function read_grid_auto(filename::AbstractString;verbose=2)
     Nb_file = filesize(filename)
 
     if Nb_file == 3*Nb_INT32 + 3*Npoints*NBF_FLOAT32
-        return read_grid_single(filename;verbose=verbose)
+        return read_grid_single(filename;verbose=verbose,endian=endian)
     elseif Nb_file == 3*Nb_INT32 + 3*Npoints*NBF_FLOAT64
-        return read_grid_double(filename;verbose=verbose)
+        return read_grid_double(filename;verbose=verbose,endian=endian)
     else
         @error println("$filename is not written in pl3d format or written with record marker .")
         return NaN
@@ -112,7 +124,7 @@ function typeof_gridfile(filename::AbstractString; verbose=2)
     end
     return 0
 end
-function read_grid_specifying_xyz(filename::String,iddir::Int; verbose=2)
+function read_grid_specifying_xyz(filename::String,iddir::Int; verbose=2,endian="little")
     NBF_FLOAT64 = 8
     NBF_FLOAT32 = 4
     if verbose>=1
@@ -129,7 +141,11 @@ function read_grid_specifying_xyz(filename::String,iddir::Int; verbose=2)
         skip(io,Nb_skip)
         read!(io,qvar)
         close(io)
-        return qvar
+        if endian=="little"
+            return qvar
+        else
+            return ntoh.(qvar)
+        end
     elseif tp=="double"
         io   = open(filename,"r") 
         read!(io,dims)
@@ -138,7 +154,11 @@ function read_grid_specifying_xyz(filename::String,iddir::Int; verbose=2)
         skip(io,Nb_skip)
         read!(io,qvar)
         close(io)
-        return qvar
+        if endian=="little"
+            return qvar
+        else
+            return ntoh.(qvar)
+        end
     else
         return nothing
     end
@@ -147,7 +167,7 @@ end
 """
 read_grid_specifying_xyz_rect(filename::String,iddir::Int; verbose=2) returns the vector containing the data of specified direction assuming the rectangular cell.
 """
-function read_grid_specifying_xyz_rect(filename::String,iddir::Int; verbose=2)
+function read_grid_specifying_xyz_rect(filename::String,iddir::Int; verbose=2,endian="little")
     NBF_FLOAT64 = 8
     NBF_FLOAT32 = 4
     if verbose>=1
@@ -175,6 +195,9 @@ function read_grid_specifying_xyz_rect(filename::String,iddir::Int; verbose=2)
         qvar = Array{Float32}(undef,trimed_dims...)
         read!(io,qvar)
         close(io)
+        if endian!="little"
+            qvar=ntoh.(qvar)
+        end
         return Base.getindex(qvar, idgs...)
     elseif tp=="double"
         io   = open(filename,"r")
@@ -195,18 +218,21 @@ function read_grid_specifying_xyz_rect(filename::String,iddir::Int; verbose=2)
         qvar = Array{Float64}(undef,trimed_dims...)
         read!(io,qvar)
         close(io)
+        if endian!="little"
+            qvar=ntoh.(qvar)
+        end
         return Base.getindex(qvar, idgs...)
     else
         return nothing
     end
 end
-function read_grid_specifying_xyz_rect(filename::String,iddir::String; verbose=2)
+function read_grid_specifying_xyz_rect(filename::String,iddir::String; verbose=2,endian="little")
     if iddir in ["x", "xdir","x-dir"]
-        read_grid_specifying_xyz_rect(filename,1; verbose=verbose)
+        read_grid_specifying_xyz_rect(filename,1; verbose=verbose,endian=endian)
     elseif iddir in ["y", "ydir","y-dir"]
-        read_grid_specifying_xyz_rect(filename,2; verbose=verbose)
+        read_grid_specifying_xyz_rect(filename,2; verbose=verbose,endian=endian)
     elseif iddir in ["z","zdir","z-dir"]
-        read_grid_specifying_xyz_rect(filename,3; verbose=verbose)
+        read_grid_specifying_xyz_rect(filename,3; verbose=verbose,endian=endian)
     else
         println("invalid iddir. Try use of {x, y, z}::String or {1, 2, 3}::Int as the second input.")
         return nothing
