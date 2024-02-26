@@ -20,11 +20,11 @@ using FortranFiles
     --myMarker (T: ???)     : RECMRK4B or  RECMRK8B or "stream"
     --myPrecision(T:String) : "single" or "double"
 """
-function grid(filename::String,myEndian::String,myMarker::String,myPrecision::String)
+function grid(filename::String; myEndian::String,myMarker::String,myPrecision::String)
     @show filename
-    if myEndian == "big" || myEndian =="b"
+    if myEndian == "big" || myEndian =="b" || myEndian =="big-endian"
         myEndian = "big-endian"
-    elseif myEndian == "little" || myEndian =="l"
+    elseif myEndian == "little" || myEndian =="l" ||  myEndian =="little-endian"
         myEndian = "little-endian"
     else
         println("input error : myEndian")
@@ -75,11 +75,11 @@ end
 --myMarker (T: ???)     : RECMRK4B or  RECMRK8B or "stream"
 --myPrecision(T:String) : "single" or "double"
 """
-function flow(filename::String,myEndian::String,myMarker::String,myPrecision::String)
+function flow(filename::String; myEndian::String,myMarker::String,myPrecision::String)
     @show filename
-    if myEndian == "big" || myEndian =="b"
+    if myEndian == "big" || myEndian =="b" || myEndian =="big-endian"
         myEndian = "big-endian"
-    elseif myEndian == "little" || myEndian =="l"
+    elseif myEndian == "little" || myEndian =="l" ||  myEndian =="little-endian"
         myEndian = "little-endian"
     else
         println("input error : myEndian")
