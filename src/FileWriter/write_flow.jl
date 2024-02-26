@@ -28,6 +28,8 @@ function write_flow(filename::AbstractString,q::Array{T,4},params::Vector{S}
       write(f,Float64.(params))
       write(f,Float64.(q))
     end
+  else
+    @error "invalid" precision
   end
   return filename
 end
