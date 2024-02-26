@@ -1,4 +1,4 @@
-function read_uns(filename::AbstractString)
+function read_uns(filename::AbstractString; endian="little")
     ngridpoints=Vector{Int32}(undef,1)
     uidum   = Vector{UInt8}(undef,80)
     idum1   = Vector{Int32}(undef,1)
@@ -30,7 +30,11 @@ function read_uns(filename::AbstractString)
         read!(io,qall)
         read!(io,idum1)
     end
-    return qall
+    if endian=="little"
+        return qall
+    else
+        return ntoh.(qall)
+    end
 end
 
 
