@@ -136,6 +136,9 @@ function read_grid_specifying_xyz(filename::String,iddir::Int; verbose=2,endian=
     if tp=="single"
         io   = open(filename,"r") 
         read!(io,dims)
+        if endian!="little"
+            dims=ntoh.(dims)
+        end
         qvar = Array{Float32}(undef,(dims[1],dims[2],dims[3]))
         Nb_skip = prod(@view dims[1:2])*(iddir-1)*NBF_FLOAT32
         skip(io,Nb_skip)
@@ -149,6 +152,9 @@ function read_grid_specifying_xyz(filename::String,iddir::Int; verbose=2,endian=
     elseif tp=="double"
         io   = open(filename,"r") 
         read!(io,dims)
+        if endian!="little"
+            dims=ntoh.(dims)
+        end
         qvar = Array{Float64}(undef,(dims[1],dims[2],dims[3]))
         Nb_skip = prod(@view dims[1:2])*(iddir-1)*NBF_FLOAT64
         skip(io,Nb_skip)
