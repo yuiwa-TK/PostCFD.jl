@@ -7,6 +7,7 @@ function read_function_single(filename::String; verbose=2,endian="little")
     qall = 0
 
     open(filename,"r") do io 
+        read!(io, dims)
         jmax = dims[1]
         kmax = dims[2]
         lmax = dims[3]
@@ -34,6 +35,7 @@ function read_function_double(filename::String; verbose=2,endian="little")
     qall = 0
 
     open(filename,"r") do io 
+        read!(io, dims)
         jmax = dims[1]
         kmax = dims[2]
         lmax = dims[3]
