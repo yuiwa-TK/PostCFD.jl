@@ -1,4 +1,4 @@
-function read_function_single(filename::String; verbose=2)
+function read_function_single(filename::String; verbose=2,endian="little")
     if verbose>=1
         @show filename
     end
@@ -12,13 +12,20 @@ function read_function_single(filename::String; verbose=2)
         kmax = dims[2]
         lmax = dims[3]
         nvar = dims[4]
+        if endian!="little"
+            jmax,kmax,lmax,nvar=ntoh.(jmax,kmax,lmax,nvar)
+        end
         qall = Array{Float32}(undef,(jmax,kmax,lmax,nvar))
         read!(io,qall)
     end
-    return qall
+    if endian!="little"
+        return ntoh.(qall)
+    else
+        return qall
+    end
 end
 
-function read_function_double(filename::String; verbose=2)
+function read_function_double(filename::String; verbose=2,endian="little")
     if verbose>=1
         @show filename
     end
@@ -32,10 +39,17 @@ function read_function_double(filename::String; verbose=2)
         kmax = dims[2]
         lmax = dims[3]
         nvar = dims[4]
+        if endian!="little"
+            jmax,kmax,lmax,nvar=ntoh.(jmax,kmax,lmax,nvar)
+        end
         qall = Array{Float64}(undef,(jmax,kmax,lmax,nvar))
         read!(io,qall)
     end
-    return qall
+    if endian!="little"
+        return ntoh.(qall)
+    else
+        return qall
+    end
 end
 
 function read_function_dims(filename::String; verbose=2)
@@ -92,9 +106,9 @@ function read_function_auto(filename::AbstractString; verbose=2,endian="little")
     Nb_file = filesize(filename)
 
     if Nb_file == 4*Nb_INT32 + Nvars*NBF_FLOAT32
-        return read_function_single(filename; verbose=verbose)
+        return read_function_single(filename; verbose=verbose,endian=endian)
     elseif Nb_file == 4*Nb_INT32 + Nvars*NBF_FLOAT64
-        return read_function_double(filename; verbose=verbose)
+        return read_function_double(filename; verbose=verbose,endian=endian)
     else
         @error println("$filename is not written in pl3d format or written with record marker .")
         return NaN
