@@ -98,3 +98,4 @@ function set_num_of_statistics_variables(mode)
                 Diffusion_Cmpct_ContinuousEq, Diffusion_Cmpct_MomentEnergyEq)
     end
 end
+read_qave=read_statistics
