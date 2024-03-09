@@ -12,7 +12,7 @@ function read_function_single(filename::String; verbose=2,endian="little")
         lmax = dims[3]
         nvar = dims[4]
         if endian!="little"
-            jmax,kmax,lmax,nvar=ntoh.(jmax,kmax,lmax,nvar)
+            jmax,kmax,lmax,nvar=ntoh.([jmax,kmax,lmax,nvar])
         end
         @show jmax,kmax,lmax,nvar
         qall = Array{Float32}(undef,(jmax,kmax,lmax,nvar))
@@ -39,7 +39,7 @@ function read_function_double(filename::String; verbose=2,endian="little")
         lmax = dims[3]
         nvar = dims[4]
         if endian!="little"
-            jmax,kmax,lmax,nvar=ntoh.(jmax,kmax,lmax,nvar)
+            jmax,kmax,lmax,nvar=ntoh.([jmax,kmax,lmax,nvar])
         end
         @show jmax,kmax,lmax,nvar
         qall = Array{Float64}(undef,(jmax,kmax,lmax,nvar))
