@@ -1,3 +1,6 @@
+"""
+$(README)
+"""
 module PostCFD
 
 using Reexport
