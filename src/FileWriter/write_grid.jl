@@ -1,11 +1,11 @@
 """
   write grid file for fieldview
 
-  function  write_grid_single(filename::String,xyz::Array{T})
+  function  write_grid_single(filename::String,xyz::AbstractArray{T})
     Arg1: filename
     Aeg2: grid data 
 """
-function  write_grid_single(filename::String,xyz::Array{T}) where T<:Real
+function  write_grid_single(filename::String,xyz::AbstractArray{T}) where T<:Real
   @show filename
   jmax,kmax,lmax,n = size(xyz)
   @show jmax,kmax,lmax
@@ -18,7 +18,7 @@ function  write_grid_single(filename::String,xyz::Array{T}) where T<:Real
 end
 write_grid_fv = write_grid_single
 
-function  write_grid_double(filename::String,xyz::Array{T}) where T<:Real
+function  write_grid_double(filename::String,xyz::AbstractArray{T}) where T<:Real
   @show filename
   jmax,kmax,lmax,n = size(xyz)
   @show jmax,kmax,lmax

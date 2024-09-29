@@ -15,7 +15,7 @@ mode ∈ [grid_fv(=grid_single),
           grid_double,
           restart]
 """
-function writefiles(filename::String,xyz::Array{T}; mode::String) where T<:Real
+function writefiles(filename::String,xyz::AbstractArray{T}; mode::String) where T<:Real
   @show mode
 
   if mode == "grid_fv" || mode == "grid_single"
@@ -25,7 +25,7 @@ function writefiles(filename::String,xyz::Array{T}; mode::String) where T<:Real
   end
 end
 
-function writefiles(filename::String,q::Array{T},params::Array{T}; mode::String) where T<:Real
+function writefiles(filename::String,q::AbstractArray{T},params::AbstractArray{T}; mode::String) where T<:Real
   @show mode
 
   if mode == "flow_fv" || mode == "pl3d" || mode =="flow_single" 
@@ -33,7 +33,7 @@ function writefiles(filename::String,q::Array{T},params::Array{T}; mode::String)
   end
 end
 
-function writefiles(filename::String,q::Array{T},params::Array{T},nc::Int; mode::String) where T
+function writefiles(filename::String,q::AbstractArray{T},params::AbstractArray{T},nc::Int; mode::String) where T
   @show mode
   if mode == "restart"
     return write_restart(filename,q,params,nc)

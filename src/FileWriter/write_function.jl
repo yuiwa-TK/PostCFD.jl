@@ -1,11 +1,11 @@
 """ 
-  write_function(filename::AbstractString,q::Array{T,4},;precision::AbstractString) where {T<:Real,S<:Real}
+  write_function(filename::AbstractString,q::AbstractArray{T,4},;precision::AbstractString) where {T<:Real,S<:Real}
 
 keyword 'precision' ∈ [ "single", "double" ].
 If precision == "single", an output file can be visualized by 'FieldView'.
 
 """
-function write_function(filename::AbstractString,q::Array{T,4}
+function write_function(filename::AbstractString,q::AbstractArray{T,4}
                       ;precision::AbstractString) where {T<:Real}
   @show filename
   jmax,kmax,lmax,nvar = size(q)

@@ -6,7 +6,7 @@ If precision == "single", an output file can be visualized by 'FieldView'.
 
 3rd argument 'params' includes (mach , AoA, time, Re)
 """
-function write_flow(filename::AbstractString,q::Array{T,4},params::Vector{S}
+function write_flow(filename::AbstractString,q::AbstractArray{T,4},params::Vector{S}
                       ;precision::AbstractString) where {T<:Real,S<:Real}
   @show filename
   println("fvmach,alpha,re,time=",params)
@@ -42,7 +42,7 @@ end
 +Arg3: params (mach , AoA, time)
 +Arg4: nc
 """
-function write_restart(filename::String,q::Array{T,4},params::Vector{S},nc::Int) where {T<:Real,S<:Real}
+function write_restart(filename::String,q::AbstractArray{T,4},params::Vector{S},nc::Int) where {T<:Real,S<:Real}
   @show filename
   println("fvmach,alpha,time,nc=",params,nc)
   jmax,kmax,lmax,nmax = size(q)
