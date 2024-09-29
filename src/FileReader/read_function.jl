@@ -54,7 +54,7 @@ function read_function_double(filename::String; verbose=2,endian="little")
     end
 end
 
-function read_function_dims(filename::String; verbose=2)
+function read_function_dims(filename::String; verbose=2, endian="little")
     dims = Array{Int32}(undef,(4))
     open(filename,"r") do io 
         read!(io,dims)
@@ -62,15 +62,19 @@ function read_function_dims(filename::String; verbose=2)
     if verbose>=2
         @info dims
     end
-    return dims
+    if endian!="little"
+        ntoh.(dims)
+    else
+        return dims
+    end
 end
 
 
-function typeof_functionfile(filename::AbstractString; verbose=2)
+function typeof_functionfile(filename::AbstractString; verbose=2,endian="little")
     Nb_INT32 = 4
     NBF_FLOAT64 = 8
     NBF_FLOAT32 = 4
-    Nvars = prod(read_function_dims(filename; verbose=verbose))
+    Nvars = prod(read_function_dims(filename; verbose=verbose,endian=endian))
     Nb_file = filesize(filename)
 
     if Nb_file == 4*Nb_INT32 + Nvars*NBF_FLOAT32
