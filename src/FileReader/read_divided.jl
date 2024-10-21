@@ -62,8 +62,8 @@ end
 """
 read divided grid files. (eg. grid files in dir of "/Grid/Work.divide/comp/" in HPC Template. )
 This function returns xyz_vector=Vector{Array{Float64}(jmax,kmax,lmax,3)}.
-Arg1 : name of directory that contains the divided grid files.
-Arg2 : grid rank(number) indicated by range (eg. 1:2:19) or array (e.g. [1,3,5,⋯,19]) where you will read.
+- Arg1 : name of directory that contains the divided grid files.
+- Arg2 : grid rank(number) indicated by range (eg. 1:2:19) or array (e.g. [1,3,5,⋯,19]) where you will read.
 """
 function read_dividedgrid(Compdir::AbstractString,gridids::Union{OrdinalRange,Vector{Int}})
     # OrdinalRange includes typeof(ns:ne) and typeof(ns:nskip:ne) 
