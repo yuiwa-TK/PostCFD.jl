@@ -20,7 +20,7 @@ function metrics_symmetric(Grid::AbstractArray{T,4},  Func_Deriv::Function) wher
     yc = view(Grid,:,:,:,2)
     zc = view(Grid,:,:,:,3)
 
-    @assert xc ===Grid[:,:,:,1]
+    @assert xc ==Grid[:,:,:,1]
 
     xξ = Array{T}(undef,(jmax,kmax,lmax))
     yξ = Array{T}(undef,(jmax,kmax,lmax))
@@ -300,7 +300,7 @@ function Jacobian_symmetric(Grid::AbstractArray{T,4},  Func_Deriv::Function) whe
     yc = view(Grid,:,:,:,2)
     zc = view(Grid,:,:,:,3)
 
-    @assert xc ===Grid[:,:,:,1]
+    @assert xc ==Grid[:,:,:,1]
 
     xξ = Array{T}(undef,(jmax,kmax,lmax))
     yξ = Array{T}(undef,(jmax,kmax,lmax))
