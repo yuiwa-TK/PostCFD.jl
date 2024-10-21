@@ -1,5 +1,4 @@
 module PostCFD
-
 using Reexport
 
 # Some useful converter for post processing
@@ -25,5 +24,9 @@ include("FileConverter/Convertfiles.jl")
 include("FortranFileManeger/Manage_fortranfiles.jl")
 @reexport using .FortranFileWriter
 @reexport using .FortranFileReader
+
+# Derivative and Integral of vector data
+include("Math/Math.jl")
+@reexport using .MathLib
 
 end # module
