@@ -1,9 +1,10 @@
 """
-    x_vortices(v::Matrix{S},w::Matrix{S},y::Vector{S},z::Vector{S}) where S
+    vorticity(v::Matrix{S},w::Matrix{S},y::Vector{S},z::Vector{S}) where S
 compute the vortices in xi direction, assuming in the rectangular grid.
     In this function, 4th-order central derivative is used.
+    dwdy - dvdy is returned
 """
-function x_vortices(v::Matrix{S},w::Matrix{S},y::Vector{S},z::Vector{S}) where S
+function vorticity(v::Matrix{S},w::Matrix{S},y::Vector{S},z::Vector{S}) where S
     kmax = length(y)
     lmax = length(z)
     @assert kmax==size(v,1)
