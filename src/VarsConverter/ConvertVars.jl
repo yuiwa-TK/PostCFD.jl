@@ -3,6 +3,7 @@ module VarsConverter
 include("./conservative2primitive.jl")
 include("./primitive2conservative.jl")
 include("./velocity2vorticity.jl")
+include("./reynolds_stress.jl")
 
 include("./slice_grid.jl")
 include("./slice_flow.jl")
@@ -25,4 +26,3 @@ function convertvars(Inputs; options, mode::AbstractString)
 end
 
 end #module
-    
