@@ -1,10 +1,10 @@
 
 
-function flatness(f,ff,fff,ffff; is_normalize=true)
+function flatness(f,ff,fff,ffff; is_normalize=true, eps=1f-8)
     
     if is_normalize
         d = ff .- f.*f
-        d .+= eps()
+        d .+= eps
     else
         d = 1.0
     end
@@ -13,15 +13,17 @@ function flatness(f,ff,fff,ffff; is_normalize=true)
 end
 
 
-function flatness(r,rf,rff,rfff,rffff; is_normalize=true)
+function flatness(r,rf,rff,rfff,rffff; is_normalize=true, eps=1f-8)
     
     f_fave = rf./r
     if is_normalize
         d = rff .- r.*f_fave.*f_fave
-        d .+= eps()
+        d .+= eps
     else
         d = 1.0
     end
     return (rffff .- 4.0.*rfff.*f_fave .+ 6.0.*rff.*f_fave.*f_fave .- 3.0.*r.*f_fave.*f_fave.*f_fave.*f_fave)./d
 
 end
+
+kurtosis=flatness

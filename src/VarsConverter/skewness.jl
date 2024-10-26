@@ -2,11 +2,11 @@
 skewness (f, ff, fff; is_normalize=true)
 computes the cross skewness ⟨f'f'f'⟩/⟨f'f'⟩^{1.5} (if is_normalize is true)
 """
-function skewness(f, ff, fff; is_normalize=true)
+function skewness(f, ff, fff; is_normalize=true,eps=1e-8)
     if is_normalize
         variance = ff .- f.*f
         d = variance.*sqrt.(abs.(variance))
-        d.+=eps()
+        d.+=eps
     else
         d=1.0
     end
@@ -33,17 +33,17 @@ end
 skewness (r, rf, rff, rfff; is_normalize=true)
 computes the Favre-averaged skewness ⟨rf'f'f'⟩/⟨rf'f'⟩^{1.5} (if is_normalize is true).
 """
-function skewness(r, rf, rff, rfff; is_normalize=true)
+function skewness(r, rf, rff, rfff; is_normalize=true, eps=1e-8)
 
     f_fave = rf./r
 
     if is_normalize
         variance = (rff .- rf.*rf)./r # ⟨rf''f''⟩/⟨r⟩ = {f''f''}
         d = variance.*sqrt.(abs.(variance))
-        d .+=eps()
-        return (rfff .- 3.0.*rff.*f_fave .+ 3.0.*rf.*f_fave .- r.*f_fave.*f_fave.*f_fave)./r./d #{f''f''f''}/{f''f''}^{1.5}
+        d .+=eps
+        return (rfff .- 3.0.*rff.*f_fave .+ 3.0.*rf.*f_fave.*f_fave .- r.*f_fave.*f_fave.*f_fave)./r./d #{f''f''f''}/{f''f''}^{1.5}
     else
-        return (rfff .- 3.0.*rff.*f_fave .+ 3.0.*rf.*f_fave .- r.*f_fave.*f_fave.*f_fave)./r
+        return (rfff .- 3.0.*rff.*f_fave .+ 3.0.*rf.*f_fave.*f_fave .- r.*f_fave.*f_fave.*f_fave)./r
     end
     return (fff .- 3.0.*ff.*f + 2.0.*f.*f.*f)./d
 end
