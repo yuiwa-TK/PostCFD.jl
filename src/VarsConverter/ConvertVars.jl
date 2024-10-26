@@ -5,13 +5,15 @@ include("./primitive2conservative.jl")
 include("./velocity2vorticity.jl")
 include("./reynolds_stress.jl")
 include("./skewness.jl")
+include("./flatness.jl")
 
 include("./slice_grid.jl")
 include("./slice_flow.jl")
 
-export vorticity, 
-       skewness, reynolds_stress, reynolds_stress_fave, 
-       prim2conv,conv2prim
+export  vorticity, 
+        reynolds_stress, reynolds_stress_fave, 
+        skewness, flatness,
+        prim2conv,conv2prim
 
 """
     convertvars(Inputs; options, mode::AbstractString)
