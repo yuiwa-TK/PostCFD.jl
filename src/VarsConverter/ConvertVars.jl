@@ -4,12 +4,14 @@ include("./conservative2primitive.jl")
 include("./primitive2conservative.jl")
 include("./velocity2vorticity.jl")
 include("./reynolds_stress.jl")
+include("./skewness.jl")
 
 include("./slice_grid.jl")
 include("./slice_flow.jl")
 
-using Reexport
-export convertvars
+export vorticity, 
+       skewness, reynolds_stress, reynolds_stress_fave, 
+       prim2conv,conv2prim
 
 """
     convertvars(Inputs; options, mode::AbstractString)

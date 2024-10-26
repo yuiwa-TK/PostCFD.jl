@@ -22,4 +22,3 @@ function slice_flow(flow, gsample; mode)
         return flow[:,idsample,:,:]
     end
 end
-    
