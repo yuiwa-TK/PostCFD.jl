@@ -6,6 +6,7 @@ function skewness(f, ff, fff; is_normalize=true)
     if is_normalize
         variance = ff .- f.*f
         d = variance.*sqrt.(abs.(variance))
+        d.+=eps()
     else
         d=1.0
     end
@@ -37,9 +38,10 @@ function skewness(r, rf, rff, rfff; is_normalize=true)
     f_fave = rf./r
 
     if is_normalize
-        variance = rff .- r.*f_fave.*f_fave
+        variance = (rff .- rf.*rf)./r # ⟨rf''f''⟩/⟨r⟩ = {f''f''}
         d = variance.*sqrt.(abs.(variance))
-        return (rfff .- 3.0.*rff.*f_fave .+ 3.0.*rf.*f_fave .- r.*f_fave.*f_fave.*f_fave)./d
+        d .+=eps()
+        return (rfff .- 3.0.*rff.*f_fave .+ 3.0.*rf.*f_fave .- r.*f_fave.*f_fave.*f_fave)./r./d #{f''f''f''}/{f''f''}^{1.5}
     else
         return (rfff .- 3.0.*rff.*f_fave .+ 3.0.*rf.*f_fave .- r.*f_fave.*f_fave.*f_fave)./r
     end

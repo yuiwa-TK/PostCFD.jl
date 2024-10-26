@@ -4,6 +4,7 @@ function flatness(f,ff,fff,ffff; is_normalize=true)
     
     if is_normalize
         d = ff .- f.*f
+        d .+= eps()
     else
         d = 1.0
     end
@@ -17,6 +18,7 @@ function flatness(r,rf,rff,rfff,rffff; is_normalize=true)
     f_fave = rf./r
     if is_normalize
         d = rff .- r.*f_fave.*f_fave
+        d .+= eps()
     else
         d = 1.0
     end
