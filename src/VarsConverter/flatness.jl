@@ -20,6 +20,6 @@ function flatness(r,rf,rff,rfff,rffff; is_normalize=true)
     else
         d = 1.0
     end
-    return (rffff .- 4.0.*rfff.*f_fave .+ 6.0.*rff.*f_fave.*f_fave .- 3.0.*f_fave.*f_fave.*f_fave.*f_fave)./d
+    return (rffff .- 4.0.*rfff.*f_fave .+ 6.0.*rff.*f_fave.*f_fave .- 3.0.*r.*f_fave.*f_fave.*f_fave.*f_fave)./d
 
 end
