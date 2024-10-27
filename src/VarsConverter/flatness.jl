@@ -15,13 +15,14 @@ end
 
 function flatness(r,rf,rff,rfff,rffff; is_normalize=true, eps=1f-8)
     
-    f_fave = rf./r
     if is_normalize
-        d = rff .- r.*f_fave.*f_fave
-        d .+= eps
+        variance = (rff .- rf.*rf./r)./r # ⟨rf''f''⟩/⟨r⟩ = {f''f''}
+        d = variance.*variance 
+        d.+= eps
     else
         d = 1.0
     end
+    f_fave = rf./r
     return (rffff .- 4.0.*rfff.*f_fave .+ 6.0.*rff.*f_fave.*f_fave .- 3.0.*r.*f_fave.*f_fave.*f_fave.*f_fave)./d
 
 end
