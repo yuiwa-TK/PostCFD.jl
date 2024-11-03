@@ -17,6 +17,7 @@ computes the Reynods stress
 """
 function reynolds_stress(rho, rf,rg, rfg)
     ffave= rf./rho
+    gfave= rg./rho
     return rfg.-ffave.*gfave.*rg # ρu''iu''j
 end
 
