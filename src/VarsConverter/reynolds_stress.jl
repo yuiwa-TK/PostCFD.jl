@@ -10,17 +10,21 @@ function reynolds_stress(rho, rf, rff)
 end
 
 @doc raw"""
-reynolds_stress(rho, rf, rg, rff)
+reynolds_stress(rho, rf, rg, rfg)
 computes the Reynods stress 
 
 `` \overline{\rho} \widetilde{f''f''} ``
 """
 function reynolds_stress(rho, rf,rg, rfg)
-    ffave= rf./rho
-    gfave= rg./rho
-    return rfg.-ffave.*gfave.*rg # ρu''iu''j
+    return rfg.-rf.*rg./rho # ρu''iu''j
 end
 
+@doc raw"""
+reynolds_stress(rho, ffave, gfave, rfg)
+computes the Reynods stress 
+
+`` \overline{\rho} \widetilde{f''f''} ``
+"""
 function reynolds_stress_fave(rho, ffave,gfave, rfg)
     return rfg.-rho.*ffave.*gfave # ρu''iu''j
 end
