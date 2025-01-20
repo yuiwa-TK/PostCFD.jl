@@ -4,7 +4,7 @@
 reads a file with pl3d format written in *little-endian* & *stream*.  
 and returns *qall=Array{Float64}(jmax,kmax,lmax,5)*.
 """
-function read_flow_double(filename::AbstractString; verbose=2)
+function read_flow_double(filename::AbstractString; verbose=2, endian="little")
     if verbose>=1
         @info filename
     end
@@ -19,6 +19,10 @@ function read_flow_double(filename::AbstractString; verbose=2)
     open(filename,"r") do io 
         read!(io,dims)
         read!(io,params)
+        if endian in ["b", "B", "big", "big-endian"]
+            dims=ntoh.(dims)
+            params=ntoh.(params)
+        end
         if verbose>=2
             @show dims
             @show params
@@ -29,7 +33,11 @@ function read_flow_double(filename::AbstractString; verbose=2)
         qall = Array{Float64}(undef,(jmax,kmax,lmax,nov))
         read!(io,qall)
     end
-    return qall
+    if endian in ["b", "B", "big", "big-endian"]
+        return ntoh.(qall)
+    else
+        return qall
+    end
 end
 
 """
@@ -54,6 +62,10 @@ function read_flow_single(filename::AbstractString;verbose=2)
     open(filename,"r") do io 
         read!(io,dims)
         read!(io,params)
+        if endian in ["b", "B", "big", "big-endian"]
+            dims=ntoh.(dims)
+            params=ntoh.(params)
+        end
         if verbose>=2
             @show dims
             @show params
@@ -64,7 +76,11 @@ function read_flow_single(filename::AbstractString;verbose=2)
         qall = Array{Float32}(undef,(jmax,kmax,lmax,nov))
         read!(io,qall)
     end
-    return qall
+    if endian in ["b", "B", "big", "big-endian"]
+        return ntoh.(qall)
+    else
+        return qall
+    end
 end
 read_flow_fv = read_flow_single
 
@@ -90,6 +106,11 @@ function read_restart(filename::AbstractString;verbose=2)
         read!(io,dims)
         read!(io,params)
         read!(io,nc) 
+        if endian in ["b", "B", "big", "big-endian"]
+            dims=ntoh.(dims)
+            params=ntoh.(params)
+            nc = ntoh(nc)
+        end
         if verbose>=2
             @show dims
             @show params
@@ -101,9 +122,12 @@ function read_restart(filename::AbstractString;verbose=2)
         qall = Array{Float64}(undef,(jmax,kmax,lmax,nov))
         read!(io,qall)
     end
-    return qall
+    if endian in ["b", "B", "big", "big-endian"]
+        return ntoh.(qall)
+    else
+        return qall
+    end
 end
-
 
 """
     dim,param = read_flow_params(filename::AbstractString; type)
@@ -158,12 +182,16 @@ end
 Read grid size from a flow file.
 This program return Tuple:(jmax,kmax,lmax)
 """
-function read_flow_dims(filename::AbstractString)
+function read_flow_dims(filename::AbstractString, endian="little")
     dims = Array{Int32}(undef,(3))
     open(filename,"r") do io
         read!(io,dims)
     end
-    return dims
+    if endian in ["b", "B", "big", "big-endian"]
+        return ntoh.(dims)
+    else
+        return dims
+    end
 end
 
 """

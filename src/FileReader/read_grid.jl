@@ -12,6 +12,9 @@ function read_grid_double(filename::AbstractString; verbose=2,endian="little")
     dims= Array{Int32}(undef,(3))
     open(filename,"r") do io 
         read!(io,dims)
+        if endian in ["b",  "B", "big", "big-endian"]
+            dims=ntoh.(dims)
+        end
         if verbose>=2
             @show dims
         end
@@ -41,6 +44,9 @@ function read_grid_single(filename::AbstractString;verbose=2,endian="little")
     dims= Array{Int32}(undef,(3))
     open(filename,"r") do io 
         read!(io,dims)
+        if endian in ["b",  "B", "big", "big-endian"]
+            dims=ntoh.(dims)
+        end
         if verbose>=2
             @show dims
         end
@@ -50,10 +56,10 @@ function read_grid_single(filename::AbstractString;verbose=2,endian="little")
         xyz = Array{Float32}(undef,(jmax,kmax,lmax,3))
         read!(io,xyz)
     end
-    if endian=="little"
-        return xyz
-    else
+    if endian in ["b","B", "big", "big-endian"]
         return ntoh.(xyz)
+    else
+        return xyz
     end
 end
 read_grid_fv = read_grid_single
@@ -71,10 +77,10 @@ function read_grid_dims(filename::AbstractString;verbose=2, endian="little")
     open(filename,"r") do io
         read!(io,dims)
     end
-    if endian=="little"
-        return dims
-    else
+    if endian in ["b","B", "big", "big-endian"]
         return ntoh.(dims)
+    else
+        return dims
     end
 end
 
@@ -106,21 +112,33 @@ function typeof_gridfile(filename::AbstractString; verbose=2)
     Nb_INT32 = 4
     NBF_FLOAT64 = 8
     NBF_FLOAT32 = 4
+    NB_RECMRK4B = 4
+    NB_RECMRK8B = 8
     Nvars = prod(read_grid_dims(filename; verbose=0))
     Nb_file = filesize(filename)
 
     if Nb_file == 3*Nb_INT32 + 3*Nvars*NBF_FLOAT32
         if verbose>=1
-            println("$filename is single format")
+            println("$filename is single precision format")
         end
         return "single"
     elseif Nb_file ==3*Nb_INT32 + 3*Nvars*NBF_FLOAT64
         if verbose>=1
-            println("$filename is double format")
+            println("$filename is double precision format")
         end
         return "double"
+    elseif Nb_file == 3*Nb_INT32 + 3*Nvars*NBF_FLOAT32 + NB_RECMRK4B*(3+3Nvars)
+        if verbose>=1
+            println("$filename is single precision format with 4-byte record marker (singleRC4)")
+        end
+        return "singleRC4"
+    elseif Nb_file == 3*Nb_INT32 + 3*Nvars*NBF_FLOAT64 + NB_RECMRK8B*(3+3Nvars)
+        if verbose>=1
+            println("$filename is double precision format with 8-byte record marker (singleRC4)")
+        end
+        return "doubleRC8"
     else
-        @error println("$filename is not written in pl3d format or written with record marker .")
+        @error println("$filename is not written in pl3d format or written with record marker.")
     end
     return 0
 end
