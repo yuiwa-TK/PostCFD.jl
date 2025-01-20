@@ -47,7 +47,7 @@ end
 reads a file with pl3d format written in *little-endian* & *stream*.  
 and returns *qall=Array{Float32}(jmax,kmax,lmax,5)*.
 """
-function read_flow_single(filename::AbstractString;verbose=2)
+function read_flow_single(filename::AbstractString;verbose=2,endian="little")
     if verbose>=1
         @info filename
     end
@@ -89,7 +89,7 @@ read_flow_fv = read_flow_single
 read a file with *reatart* format written in *little-endian" & "stream*.  
 this function returns *qrestart=Array{Float64}(jmax,kmax,lmax,5)*.
 """
-function read_restart(filename::AbstractString;verbose=2)
+function read_restart(filename::AbstractString;verbose=2,endian="little")
     if verbose>=1
         @info filename
     end
@@ -198,7 +198,7 @@ end
     read_flow_auto(filename::AbstractString)
 automatically determines the file type written in pl3d format.
 """
-function read_flow_auto(filename::AbstractString; verbose=2)
+function read_flow_auto(filename::AbstractString; verbose=2, endian="little")
     Nb_INT32 = 4
     NBF_FLOAT64 = 8
     NBF_FLOAT32 = 4
@@ -206,11 +206,11 @@ function read_flow_auto(filename::AbstractString; verbose=2)
     Nb_file = filesize(filename)
 
     if Nb_file == 3*Nb_INT32 + 4*NBF_FLOAT32 +5*Npoints*NBF_FLOAT32
-        return read_flow_single(filename; verbose= verbose)
+        return read_flow_single(filename; verbose= verbose, endian=endian)
     elseif Nb_file == 3*Nb_INT32 + 4*NBF_FLOAT64 + 5*Npoints*NBF_FLOAT64
-        return read_flow_double(filename; verbose= verbose)
+        return read_flow_double(filename; verbose= verbose, endian=endian)
     elseif Nb_file == 3*Nb_INT32 + 3*NBF_FLOAT64 + Nb_INT32 + 5*Npoints*NBF_FLOAT64
-        return read_restart(filename;  verbose= verbose)
+        return read_restart(filename;  verbose= verbose, endian=endian)
     else
         @error println("$filename is not written in pl3d format or written with record marker .")
         return NaN
