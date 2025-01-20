@@ -20,8 +20,10 @@ using FortranFiles
     --myMarker (T: ???)     : RECMRK4B or  RECMRK8B or "stream"
     --myPrecision(T:String) : "single" or "double"
 """
-function grid(filename::String; myEndian::String,myMarker::String,myPrecision::String)
-    @show filename
+function grid(filename::String; myEndian::String,myMarker::String,myPrecision::String,verbose=1)
+    if verbose>0
+        @show filename
+    end
     if myEndian == "big" || myEndian =="b" || myEndian =="big-endian"
         myEndian = "big-endian"
     elseif myEndian == "little" || myEndian =="l" ||  myEndian =="little-endian"
@@ -46,13 +48,19 @@ function grid(filename::String; myEndian::String,myMarker::String,myPrecision::S
     else
         println("not supported")
     end
-    # @show myEndian,myMarker,myPrecision
+    
+    if verbose>1
+        @info myEndian,myMarker,myPrecision
+   end
     io    = FortranFile(filename,convert=myEndian,marker=myMarker)
     sizes = read(io,(Int32,3))
-    n     = Tuple(sizes)
-    x,y,z = read(io,(myPrecision,n),(myPrecision,n),(myPrecision,n))
+    if verbose>1
+        @info sizes
+    end
+    n  = Tuple(push!(sizes,3))
+    G  = read(io,(myPrecision,n))
 
-    return sizes, x,y,z
+    return sizes, G
 end
 
 
@@ -75,8 +83,10 @@ end
 --myMarker (T: ???)     : RECMRK4B or  RECMRK8B or "stream"
 --myPrecision(T:String) : "single" or "double"
 """
-function flow(filename::String; myEndian::String,myMarker::String,myPrecision::String)
-    @show filename
+function flow(filename::String; myEndian::String,myMarker::String,myPrecision::String, verbose::Int=0)
+    if verbose>0
+        @show filename
+    end
     if myEndian == "big" || myEndian =="b" || myEndian =="big-endian"
         myEndian = "big-endian"
     elseif myEndian == "little" || myEndian =="l" ||  myEndian =="little-endian"
@@ -102,10 +112,19 @@ function flow(filename::String; myEndian::String,myMarker::String,myPrecision::S
         println("not supported")
     end
 
-    # @show myEndian,myMarker,myPrecision,flag
+    if verbose>1
+         @info myEndian,myMarker,myPrecision
+    end
     io    = FortranFile(filename,convert=myEndian,marker=myMarker)
     sizes = read(io,(Int32,3))                       #imax,jmax,kmax
+    if verbose>1
+        @info sizes
+    end
     n     = Tuple(push!(sizes,5))
+    info  = read(io,(myPrecision,4))
+    if verbose>1
+        @info "mach,alpha,re,time", info
+    end
     q     = read(io,(myPrecision,n))                 #q
     return sizes, info,q
 end
