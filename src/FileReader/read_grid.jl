@@ -93,7 +93,7 @@ function read_grid_auto(filename::AbstractString;verbose=2,endian="little")
     NBF_FLOAT64 = 8
     NBF_FLOAT32 = 4
 
-    Npoints = prod(read_grid_dims(filename;verbose=verbose))
+    Npoints = prod(read_grid_dims(filename;verbose=0)) # verbose=0 becasue the same info will be shown in read_grid_ funciton
     Nb_file = filesize(filename)
 
     if Nb_file == 3*Nb_INT32 + 3*Npoints*NBF_FLOAT32
