@@ -7,13 +7,16 @@ include("./reynolds_stress.jl")
 include("./skewness.jl")
 include("./flatness.jl")
 
+include("./sutherland.jl")
+
 include("./slice_grid.jl")
 include("./slice_flow.jl")
 
 export  vorticity, 
         reynolds_stress, reynolds_stress_fave, 
         skewness, flatness,
-        prim2conv,conv2prim
+        prim2conv,conv2prim,
+        sutherland
 
 """
     convertvars(Inputs; options, mode::AbstractString)
