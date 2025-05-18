@@ -16,6 +16,11 @@ makedocs(;
     ),
     pages=[
         "Home" => "index.md",
+        "API Reference" => Any[
+            "FileReader" => "filereader.md",
+            "Filewriter" => "filewriter.md",
+            "MathLib" => "mathlib.md",
+        ]
     ],
 )
 
