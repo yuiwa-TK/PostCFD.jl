@@ -6,7 +6,6 @@ include("./velocity2vorticity.jl")
 include("./reynolds_stress.jl")
 include("./skewness.jl")
 include("./flatness.jl")
-
 include("./sutherland.jl")
 
 include("./slice_grid.jl")
