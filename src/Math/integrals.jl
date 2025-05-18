@@ -1,4 +1,4 @@
-function ∫fdy(f,y; intrange, type="trapezoid_extp")
+function ∫fdy(f,y; intrange, type="trapezoid")
     if type=="trapezoid"
         return ∫fdy_tp(f,y; intrange)
     elseif type=="trapezoid_extp"
