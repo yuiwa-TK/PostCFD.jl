@@ -1,5 +1,7 @@
 module Geometry
 using DelimitedFiles
+include("../Math/derivatives_inplace.jl")
+include("fast_jacobian_metrics.jl")
 
 export Jacobian,Jacobian_symmetric,metrics,metrics_symmetric
 
@@ -254,10 +256,6 @@ function metrics_symmetric(Grid::AbstractArray{T,4},  Func_Deriv::Function) wher
     for l=1:lmax
         for k=1:kmax
             for j=1:jmax
-                if Jacobi_inv[j,k,l]<=0
-                    # @error "Negative Jacobian", Jacobi_inv[j,k,l],"@(j,k,l)=",j,k,l
-                    append!(negatives,j,k,l,Jacobi_inv[j,k,l])
-                end
                 Jacobi_inv[j,k,l] = 1/Jacobi_inv[j,k,l]
 
                 met[j,k,l,1,1] = met[j,k,l,1,1] * Jacobi_inv[j,k,l]
@@ -272,11 +270,16 @@ function metrics_symmetric(Grid::AbstractArray{T,4},  Func_Deriv::Function) wher
             end
         end
     end
-    if length(negatives) !=0
-        open("negative_Jacobian.dat","w+") do io
-            writedlm(io,reshape(negatives,4,:)')
-        end
-        @error "negative_Jacobian"
+    # if length(negatives) !=0
+    #     open("negative_Jacobian.dat","w+") do io
+    #         writedlm(io,reshape(negatives,4,:)')
+    #     end
+    #     @error "negative_Jacobian"
+    #     return 1
+    # end
+        
+    if any(x->x<=0, J)
+        @error "negativeJacobian"
         return 1
     end
 
@@ -544,7 +547,10 @@ function Jacobian_symmetric(Grid::AbstractArray{T,4},  Func_Deriv::Function) whe
     return Jacobi_inv
 end
 
-
+"""
+    metrics(Grid::AbstractArray{T,4}, Func_Deriv1dvec::Function) where T
+returns Jaccobian and metrics
+"""
 function metrics(Grid::AbstractArray{T,4}, Func_Deriv1dvec::Function) where T
     jmax,kmax,lmax,dum1= size(Grid)
 
@@ -570,9 +576,9 @@ function metrics(Grid::AbstractArray{T,4}, Func_Deriv1dvec::Function) where T
         end
     end
     else
-        xξ[:,k,l] .= 1.0
-        yξ[:,k,l] .= 0.0
-        zξ[:,k,l] .= 0.0
+        fill!(xξ, 1.0)
+        fill!(yξ, 0.0)
+        fill!(zξ, 0.0)
     end
 
     # compute on j=const.,l=const. plane
@@ -586,9 +592,9 @@ function metrics(Grid::AbstractArray{T,4}, Func_Deriv1dvec::Function) where T
             end
         end
     else
-        xη[:,:,:] .= 0.0
-        yη[:,:,:] .= 1.0
-        zη[:,:,:] .= 0.0
+        fill!(xη, 0.0)
+        fill!(yη, 1.0)
+        fill!(zη, 0.0)
     end
     
     # compute on k=const. plane
@@ -603,9 +609,9 @@ function metrics(Grid::AbstractArray{T,4}, Func_Deriv1dvec::Function) where T
             end
         end
     else
-        xζ[:,:,:] .=  0.0
-        yζ[:,:,:] .=  0.0
-        zζ[:,:,:] .=  1.0
+        fill!(xζ, 0.0)
+        fill!(yζ, 0.0)
+        fill!(zζ, 1.0)
     end
 
     # ================================================================
@@ -637,7 +643,6 @@ end
 
 function Jacobian(Grid::AbstractArray{T,4}, Func_Deriv1dvec::Function) where T
     jmax,kmax,lmax,dum1= size(Grid)
-
     xξ = Array{T}(undef,(jmax,kmax,lmax))
     yξ = Array{T}(undef,(jmax,kmax,lmax))
     zξ = Array{T}(undef,(jmax,kmax,lmax))
@@ -647,55 +652,60 @@ function Jacobian(Grid::AbstractArray{T,4}, Func_Deriv1dvec::Function) where T
     xζ = Array{T}(undef,(jmax,kmax,lmax))
     yζ = Array{T}(undef,(jmax,kmax,lmax))
     zζ = Array{T}(undef,(jmax,kmax,lmax))
-    met= Array{T}(undef,(jmax,kmax,lmax,3,3))
-    
+
     # compute on k=const.,l=const. plane
     # x_xi, y_xi, z_xi
     if jmax > 1
-    for l in axes(Grid,3)
-        for k in axes(Grid,2)
-            xξ[:,k,l] = @inline Func_Deriv1dvec( view(Grid, :, k, l,1) )
-            yξ[:,k,l] = @inline Func_Deriv1dvec( view(Grid, :, k, l,2) ) 
-            zξ[:,k,l] = @inline Func_Deriv1dvec( view(Grid, :, k, l,3) )
+        @inbounds begin 
+        for l in axes(Grid,3)
+            for k in axes(Grid,2)
+                xξ[:,k,l] .= Func_Deriv1dvec( view(Grid, :, k, l,1) )
+                yξ[:,k,l] .= Func_Deriv1dvec( view(Grid, :, k, l,2) ) 
+                zξ[:,k,l] .= Func_Deriv1dvec( view(Grid, :, k, l,3) )
+            end
         end
-    end
+        end
     else
-        xξ[:,k,l] .= 1.0
-        yξ[:,k,l] .= 0.0
-        zξ[:,k,l] .= 0.0
+        fill!(xξ, 1.0)
+        fill!(yξ, 0.0)
+        fill!(zξ, 0.0)
     end
 
     # compute on j=const.,l=const. plane
     # x_eta, y_eta, z_eta
     if kmax >1
+        @inbounds begin 
         for l in axes(Grid,3)
             for j in axes(Grid,1)
-                xη[j,:,l] = @inline Func_Deriv1dvec( view(Grid, j, :, l,1) )
-                yη[j,:,l] = @inline Func_Deriv1dvec( view(Grid, j, :, l,2) )
-                zη[j,:,l] = @inline Func_Deriv1dvec( view(Grid, j, :, l,3) )
+                xη[j,:,l] .=  Func_Deriv1dvec( view(Grid, j, :, l,1) )
+                yη[j,:,l] .=  Func_Deriv1dvec( view(Grid, j, :, l,2) )
+                zη[j,:,l] .=  Func_Deriv1dvec( view(Grid, j, :, l,3) )
             end
         end
+        end
     else
-        xη[:,:,:] .= 0.0
-        yη[:,:,:] .= 1.0
-        zη[:,:,:] .= 0.0
+        fill!(xη, 0.0)
+        fill!(yη, 1.0)
+        fill!(zη, 0.0)
     end
     
     # compute on k=const. plane
     # zeta-diff on j=const
     # x_zeta, y_zeta, z_zeta 
     if lmax >1
+        @inbounds begin 
         for k in axes(Grid,2)
             for j in axes(Grid,1)
-                xζ[j,k,:] = @inline Func_Deriv1dvec( view(Grid, j, k, :,1) )
-                yζ[j,k,:] = @inline Func_Deriv1dvec( view(Grid, j, k, :,2) )
-                zζ[j,k,:] = @inline Func_Deriv1dvec( view(Grid, j, k, :,3) )
+                xζ[j,k,:] .=  Func_Deriv1dvec( view(Grid, j, k, :,1) )
+                yζ[j,k,:] .=  Func_Deriv1dvec( view(Grid, j, k, :,2) )
+                zζ[j,k,:] .=  Func_Deriv1dvec( view(Grid, j, k, :,3) )
             end
         end
+        end
     else
-        xζ[:,:,:] .=  0.0
-        yζ[:,:,:] .=  0.0
-        zζ[:,:,:] .=  1.0
+        fill!(xζ, 0.0)
+        fill!(yζ, 0.0)
+        fill!(zζ, 1.0)
     end
 
     # ================================================================
@@ -704,7 +714,8 @@ function Jacobian(Grid::AbstractArray{T,4}, Func_Deriv1dvec::Function) where T
     xix=(yη.*zζ .- yζ.*zη)
     etx=(yζ.*zξ .- yξ.*zζ)
     ztx=(yξ.*zη .- yη.*zξ)
-    J = xξ.*xix + xη.*etx + xζ.*ztx; J=1.0./J;
+    J = xξ.*xix + xη.*etx + xζ.*ztx; 
+    J = 1.0./J;
     
     if any(x->x<=0, J)
         @error "negativeJacobian"
