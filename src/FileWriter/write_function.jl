@@ -6,9 +6,10 @@ If precision == "single", an output file can be visualized by 'FieldView'.
 
 """
 function write_function(filename::AbstractString,q::AbstractArray{T,4}
-                      ;precision::AbstractString) where {T<:Real}
-  @show filename
-  jmax,kmax,lmax,nvar = size(q)
+                      ;precision::AbstractString, verbose=2) where {T<:Real}
+  if verbose>=1; @show filename; end
+  jmax,kmax,lmax,n = size(xyz)
+  if verbose>=2; @info jmax,kmax,lmax; end
 
   if precision == "single"
     open(filename,"w") do f

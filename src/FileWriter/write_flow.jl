@@ -35,17 +35,21 @@ function write_flow(filename::AbstractString,q::AbstractArray{T,4},params::Vecto
 end
 
 """
-  write_restart(filename::String,q::Array{T,4},params::Vector{S},nc::Int) where {T<:Real,S<:Real}
+  write_restart(filename::String,q::Array{T,4},params::Vector{S},nc::Int;verbose=2) where {T<:Real,S<:Real}
 
 +Arg1: filename 
 +Arg2: q
 +Arg3: params (mach , AoA, time)
 +Arg4: nc
 """
-function write_restart(filename::String,q::AbstractArray{T,4},params::Vector{S},nc::Int) where {T<:Real,S<:Real}
-  @show filename
-  println("fvmach,alpha,time,nc=",params,nc)
-  jmax,kmax,lmax,nmax = size(q)
+function write_restart(filename::String,q::AbstractArray{T,4},params::Vector{S},nc::Int;verbose=2) where {T<:Real,S<:Real}
+  if verbose>=1;  @show filename;end
+   jmax,kmax,lmax,nmax = size(q)
+
+  if verbose==2
+    println("jmax,kmax,lmax",jmax,kmax,lmax)
+    println("fvmach,alpha,time,nc=",params,nc)
+  end
 
   open(filename,"w") do f
     write(f,Int32(jmax))
