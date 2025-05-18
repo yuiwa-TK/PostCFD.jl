@@ -8,7 +8,8 @@ include("./read_header.jl")
 include("./read_function.jl")
 include("./read_uns.jl")
 
-export readfiles
+export read_grid, read_grid_specifying_xyz, read_grid_specifying_xyz_rect,
+read_flow, read_function, read_function_specifyingvaribale
 
 """
     readfiles(filename::String; mode::String [, ids]) 
