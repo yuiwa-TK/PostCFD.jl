@@ -568,13 +568,13 @@ function metrics(Grid::AbstractArray{T,4}, Func_Deriv1dvec::Function) where T
     # compute on k=const.,l=const. plane
     # x_xi, y_xi, z_xi
     if jmax > 1
-    for l in axes(Grid,3)
-        for k in axes(Grid,2)
-            xξ[:,k,l] = @inline Func_Deriv1dvec( view(Grid, :, k, l,1) )
-            yξ[:,k,l] = @inline Func_Deriv1dvec( view(Grid, :, k, l,2) ) 
-            zξ[:,k,l] = @inline Func_Deriv1dvec( view(Grid, :, k, l,3) )
+        for l in axes(Grid,3)
+            for k in axes(Grid,2)
+                xξ[:,k,l] = Func_Deriv1dvec( view(Grid, :, k, l,1) )
+                yξ[:,k,l] = Func_Deriv1dvec( view(Grid, :, k, l,2) ) 
+                zξ[:,k,l] = Func_Deriv1dvec( view(Grid, :, k, l,3) )
+            end
         end
-    end
     else
         fill!(xξ, 1.0)
         fill!(yξ, 0.0)
@@ -586,9 +586,9 @@ function metrics(Grid::AbstractArray{T,4}, Func_Deriv1dvec::Function) where T
     if kmax >1
         for l in axes(Grid,3)
             for j in axes(Grid,1)
-                xη[j,:,l] = @inline Func_Deriv1dvec( view(Grid, j, :, l,1) )
-                yη[j,:,l] = @inline Func_Deriv1dvec( view(Grid, j, :, l,2) )
-                zη[j,:,l] = @inline Func_Deriv1dvec( view(Grid, j, :, l,3) )
+                xη[j,:,l] = Func_Deriv1dvec( view(Grid, j, :, l,1) )
+                yη[j,:,l] = Func_Deriv1dvec( view(Grid, j, :, l,2) )
+                zη[j,:,l] = Func_Deriv1dvec( view(Grid, j, :, l,3) )
             end
         end
     else
@@ -603,9 +603,9 @@ function metrics(Grid::AbstractArray{T,4}, Func_Deriv1dvec::Function) where T
     if lmax >1
         for k in axes(Grid,2)
             for j in axes(Grid,1)
-                xζ[j,k,:] = @inline Func_Deriv1dvec( view(Grid, j, k, :,1) )
-                yζ[j,k,:] = @inline Func_Deriv1dvec( view(Grid, j, k, :,2) )
-                zζ[j,k,:] = @inline Func_Deriv1dvec( view(Grid, j, k, :,3) )
+                xζ[j,k,:] = Func_Deriv1dvec( view(Grid, j, k, :,1) )
+                yζ[j,k,:] = Func_Deriv1dvec( view(Grid, j, k, :,2) )
+                zζ[j,k,:] = Func_Deriv1dvec( view(Grid, j, k, :,3) )
             end
         end
     else

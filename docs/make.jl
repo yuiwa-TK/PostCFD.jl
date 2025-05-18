@@ -20,6 +20,7 @@ makedocs(;
             "FileReader" => "filereader.md",
             "Filewriter" => "filewriter.md",
             "MathLib" => "mathlib.md",
+            "VarsConverter" => "varsconverter.md",
         ]
     ],
 )
