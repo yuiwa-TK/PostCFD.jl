@@ -8,7 +8,7 @@ If precision == "single", an output file can be visualized by 'FieldView'.
 function write_function(filename::AbstractString,q::AbstractArray{T,4}
                       ;precision::AbstractString, verbose=2) where {T<:Real}
   if verbose>=1; @show filename; end
-  jmax,kmax,lmax,n = size(xyz)
+  jmax,kmax,lmax,nvar = size(q)
   if verbose>=2; @info jmax,kmax,lmax; end
 
   if precision == "single"
@@ -27,6 +27,9 @@ function write_function(filename::AbstractString,q::AbstractArray{T,4}
       write(f,Int32(nvar))
       write(f,Float64.(q))
     end
+  else
+    @warn "invalid precision"
+    println(precision)
   end
   return filename
 end

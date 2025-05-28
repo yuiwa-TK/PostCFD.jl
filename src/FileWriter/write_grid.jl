@@ -14,9 +14,9 @@ function write_grid(filename::AbstractString,xyz::AbstractArray{T}
   end
 
   if precision == "single"
-    write_grid_single(fieldname,xyz;verbose=0)
+    write_grid_single(filename,xyz;verbose=0)
   elseif precision == "double"
-    write_grid_double(fieldname,xyz;verbose=0)
+    write_grid_double(filename,xyz;verbose=0)
   end
   return filename
 end

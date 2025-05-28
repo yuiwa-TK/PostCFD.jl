@@ -278,7 +278,7 @@ function metrics_symmetric(Grid::AbstractArray{T,4},  Func_Deriv::Function) wher
     #     return 1
     # end
         
-    if any(x->x<=0, J)
+    if any(x->x<=0, Jacobi_inv)
         @error "negativeJacobian"
         return 1
     end
