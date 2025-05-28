@@ -290,7 +290,36 @@ function metrics_symmetric_fast(Grid::AbstractArray{T,4},  Func_Deriv_inplace!::
     return Jacobi_inv, met
 end
 
-function Jacobian_fast(Grid::AbstractArray{T,4}, Func_Deriv1dvec::Function=derivative_2ndcentral!) where T
+"""
+Jacobian_fast(Grid::AbstractArray{T,4}, Func_Deriv1dvec!::Function) where T
+returns Jaccobian and metrics.
+
+# Intput
+- Grid 
+- mutation (inplace) variant of derivative function (2nd argument is needed.)
+"""
+function Jacobian_fast(Grid::AbstractArray{T,4}, Func_Deriv1dvec!::Function=derivative_2ndcentral!) where T
+    return metrics_fast(Grid, Func_Deriv1dvec!; flag_outmet=false)
+end
+
+"""
+metrics_fast(Grid::AbstractArray{T,4}, Func_Deriv1dvec!::Function) where T
+returns Jaccobian and metrics.
+
+# Intput
+- Grid 
+- mutation (inplace) variant of derivative function (2nd argument is needed.)
+
+## Output
+# 
+#       --             --
+#      |xi_x eta_x zeta_x|   [1,1] [1,2] [1,3]
+# met= |xi_y eta_y zeta_y|   [2,1]  ...    :
+#      |xi_z eta_z zeta_z|   [3,1]  ...  [3,3]
+#       --             --
+# 
+"""
+function metrics_fast(Grid::AbstractArray{T,4}, Func_Deriv1dvec!::Function=derivative_2ndcentral!; flag_outmet=true) where T
     jmax,kmax,lmax,dum1= size(Grid)
     xξ = Array{T}(undef,(jmax,kmax,lmax))
     yξ = Array{T}(undef,(jmax,kmax,lmax))
@@ -302,6 +331,7 @@ function Jacobian_fast(Grid::AbstractArray{T,4}, Func_Deriv1dvec::Function=deriv
     yζ = Array{T}(undef,(jmax,kmax,lmax))
     zζ = Array{T}(undef,(jmax,kmax,lmax))
 
+
     # compute on k=const.,l=const. plane
     # x_xi, y_xi, z_xi
     if jmax > 1
@@ -309,9 +339,9 @@ function Jacobian_fast(Grid::AbstractArray{T,4}, Func_Deriv1dvec::Function=deriv
         @inbounds begin 
         for l in axes(Grid,3)
             for k in axes(Grid,2)
-                xξ[:,k,l] .= Func_Deriv1dvec( view(Grid, :, k, l,1), workm)
-                yξ[:,k,l] .= Func_Deriv1dvec( view(Grid, :, k, l,2), workm) 
-                zξ[:,k,l] .= Func_Deriv1dvec( view(Grid, :, k, l,3), workm)
+                xξ[:,k,l] .= Func_Deriv1dvec!( view(Grid, :, k, l,1), workm)
+                yξ[:,k,l] .= Func_Deriv1dvec!( view(Grid, :, k, l,2), workm) 
+                zξ[:,k,l] .= Func_Deriv1dvec!( view(Grid, :, k, l,3), workm)
             end
         end
         end
@@ -328,9 +358,9 @@ function Jacobian_fast(Grid::AbstractArray{T,4}, Func_Deriv1dvec::Function=deriv
         @inbounds begin 
         for l in axes(Grid,3)
             for j in axes(Grid,1)
-                xη[j,:,l] .=  Func_Deriv1dvec( view(Grid, j, :, l,1), workm)
-                yη[j,:,l] .=  Func_Deriv1dvec( view(Grid, j, :, l,2), workm)
-                zη[j,:,l] .=  Func_Deriv1dvec( view(Grid, j, :, l,3), workm)
+                xη[j,:,l] .=  Func_Deriv1dvec!( view(Grid, j, :, l,1), workm)
+                yη[j,:,l] .=  Func_Deriv1dvec!( view(Grid, j, :, l,2), workm)
+                zη[j,:,l] .=  Func_Deriv1dvec!( view(Grid, j, :, l,3), workm)
             end
         end
         end
@@ -348,9 +378,9 @@ function Jacobian_fast(Grid::AbstractArray{T,4}, Func_Deriv1dvec::Function=deriv
         @inbounds begin 
         for k in axes(Grid,2)
             for j in axes(Grid,1)
-                xζ[j,k,:] .=  Func_Deriv1dvec( view(Grid, j, k, :,1), workm)
-                yζ[j,k,:] .=  Func_Deriv1dvec( view(Grid, j, k, :,2), workm)
-                zζ[j,k,:] .=  Func_Deriv1dvec( view(Grid, j, k, :,3), workm)
+                xζ[j,k,:] .=  Func_Deriv1dvec!( view(Grid, j, k, :,1), workm)
+                yζ[j,k,:] .=  Func_Deriv1dvec!( view(Grid, j, k, :,2), workm)
+                zζ[j,k,:] .=  Func_Deriv1dvec!( view(Grid, j, k, :,3), workm)
             end
         end
         end
@@ -373,7 +403,23 @@ function Jacobian_fast(Grid::AbstractArray{T,4}, Func_Deriv1dvec::Function=deriv
         @error "negativeJacobian"
         return 1
     end
-    return J
+
+    if flag_outmet
+        # met (銀本の転置)
+        met=Array{T}(undef,(jmax,kmax,lmax,3,3))
+        met[:,:,:,1,1] = J.*xix                 #xi_x
+        met[:,:,:,2,1] = J.*(zη.*xζ .- zζ.*xη)  #xi_y
+        met[:,:,:,3,1] = J.*(xη.*yζ .- xζ.*yη)  #xi_z
+        met[:,:,:,1,2] = J.*etx                 #eta_x 
+        met[:,:,:,2,2] = J.*(zζ.*xξ .- zξ.*xζ)  #eta_y
+        met[:,:,:,3,2] = J.*(xζ.*yξ .- xξ.*yζ)  #eta_z
+        met[:,:,:,1,3] = J.*ztx                 #zeta_x
+        met[:,:,:,2,3] = J.*(zξ.*xη .- zη.*xξ)  #zeta_y
+        met[:,:,:,3,3] = J.*(xξ.*yη .- xη.*yξ)  #zeta_z
+        return J, met
+    else
+        return J
+    end
 end
 
 function Jacobian_fast_compact6th(Grid::AbstractArray{T,4}) where T

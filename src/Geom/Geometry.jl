@@ -14,6 +14,15 @@ returns met::Array{S}(3,3,jmax,kmax,lmax)
 ## Input
 - Grid : 4dimensional array (i.e., size(Grid)=jmax,kmax,lmax,3)
 
+## Output
+# - Jacobian
+# 
+#       --             --
+#      |xi_x eta_x zeta_x|   [1,1] [1,2] [1,3]
+# met= |xi_y eta_y zeta_y|   [2,1]  ...    :
+#      |xi_z eta_z zeta_z|   [3,1]  ...  [3,3]
+#       --             --
+
 """
 function metrics_symmetric(Grid::AbstractArray{T,4},  Func_Deriv::Function) where T
     jmax,kmax,lmax,dum1= size(Grid)
@@ -38,21 +47,28 @@ function metrics_symmetric(Grid::AbstractArray{T,4},  Func_Deriv::Function) wher
 
     # compute on k=const.,l=const. plane
     # x_xi, y_xi, z_xi
-    for l=1:lmax
-    for k=1:kmax
-        xξ[:,k,l] = Func_Deriv( view(xc, :, k, l) )
-        yξ[:,k,l] = Func_Deriv( view(yc, :, k, l) ) 
-        zξ[:,k,l] = Func_Deriv( view(zc, :, k, l) )
+    if jmax > 3
+        for l in axes(Grid,3)
+            for k in axes(Grid,2)
+                xξ[:,k,l] = Func_Deriv( view(Grid, :, k, l,1) )
+                yξ[:,k,l] = Func_Deriv( view(Grid, :, k, l,2) ) 
+                zξ[:,k,l] = Func_Deriv( view(Grid, :, k, l,3) )
+            end
+        end
+    else
+        fill!(xξ, 1.0)
+        fill!(yξ, 0.0)
+        fill!(zξ, 0.0)
     end
-    end
+
 
     # compute on j=const.,l=const. plane
     # x_eta, y_eta, z_eta
     for l=1:lmax
     for j=1:jmax
-        xη[j,:,l] = Func_Deriv( view(xc, j, :, l) )
-        yη[j,:,l] = Func_Deriv( view(yc, j, :, l) )
-        zη[j,:,l] = Func_Deriv( view(zc, j, :, l) )
+        xη[j,:,l] = Func_Deriv( view(Grid, j, :, l, 1) )
+        yη[j,:,l] = Func_Deriv( view(Grid, j, :, l, 2) )
+        zη[j,:,l] = Func_Deriv( view(Grid, j, :, l, 3) )
     end
     end
 
@@ -61,9 +77,9 @@ function metrics_symmetric(Grid::AbstractArray{T,4},  Func_Deriv::Function) wher
     # x_zeta, y_zeta, z_zeta 
     for k=1:kmax
     for j=1:jmax
-        xζ[j,k,:] = Func_Deriv( view(xc, j, k, :) )
-        yζ[j,k,:] = Func_Deriv( view(yc, j, k, :) )
-        zζ[j,k,:] = Func_Deriv( view(zc, j, k, :) )
+        xζ[j,k,:] = Func_Deriv( view(Grid, j, k, :, 1) )
+        yζ[j,k,:] = Func_Deriv( view(Grid, j, k, :, 2) )
+        zζ[j,k,:] = Func_Deriv( view(Grid, j, k, :, 3) )
     end
     end
 
@@ -81,12 +97,13 @@ function metrics_symmetric(Grid::AbstractArray{T,4},  Func_Deriv::Function) wher
     # calculating symmetric-conservative spatial metrics
     #                                       using explicit scheme
     # ================================================================= 
-    # ------------------- ξn (met[j,k,l,1,n]) -------------------------------------
+    # ------------------- ξn (met[j,k,l,n,1]) -------------------------------------
+    ff=zeros(kmax,lmax,3); 
+    gg=zeros(kmax,lmax,3); 
+    df1vec=zeros(kmax,lmax,3)
+    df2vec=zeros(kmax,lmax,3)
     for j=1:jmax
-        ff=zeros(kmax,lmax,3); 
-        gg=zeros(kmax,lmax,3); 
-        df1vec=zeros(kmax,lmax,3)
-        df2vec=zeros(kmax,lmax,3)
+        fill!(ff, 0.0); fill!(gg, 0.0); fill!(df1vec, 0.0);fill!(df2vec, 0.0);
         for l=1:lmax,k=1:kmax
             ff[k,l,1] = yη[j,k,l]*zc[j,k,l] - zη[j,k,l]*yc[j,k,l] #y_eta*z - z_eta*y
             ff[k,l,2] = zη[j,k,l]*xc[j,k,l] - xη[j,k,l]*zc[j,k,l] #z_eta*x - x_eta*z
@@ -124,11 +141,10 @@ function metrics_symmetric(Grid::AbstractArray{T,4},  Func_Deriv::Function) wher
     end
 
     # ------------------- ηn (met[j,k,l,2,n]) -------------------------------------
+    ff=zeros(jmax,lmax,3); df1vec=zeros(jmax,lmax,3)
+    gg=zeros(jmax,lmax,3); df2vec=zeros(jmax,lmax,3)
     for k=1:kmax
-        ff=zeros(jmax,lmax,3); 
-        gg=zeros(jmax,lmax,3); 
-        df1vec=zeros(jmax,lmax,3)
-        df2vec=zeros(jmax,lmax,3)
+        fill!(ff, 0.0); fill!(gg, 0.0); fill!(df1vec, 0.0);fill!(df2vec, 0.0);
         for l=1:lmax,j=1:jmax
             ff[j,l,1] = yζ[j,k,l]*zc[j,k,l] - zζ[j,k,l]*yc[j,k,l] #y_zeta*z-z_zeta*y
             ff[j,l,2] = zζ[j,k,l]*xc[j,k,l] - xζ[j,k,l]*zc[j,k,l] #z_zeta*x-x_zeta*z
@@ -137,7 +153,6 @@ function metrics_symmetric(Grid::AbstractArray{T,4},  Func_Deriv::Function) wher
             gg[j,l,1] = yξ[j,k,l]*zc[j,k,l] - zξ[j,k,l]*yc[j,k,l] #(y_xi*z-z_xi*y)
             gg[j,l,2] = zξ[j,k,l]*xc[j,k,l] - xξ[j,k,l]*zc[j,k,l] #(z_xi*x-x_xi*z)
             gg[j,l,3] = xξ[j,k,l]*yc[j,k,l] - yξ[j,k,l]*xc[j,k,l] #(x_xi*y-y_xi*x)
-
         end
         # xi diff of ff
         for l=1:lmax
@@ -164,9 +179,10 @@ function metrics_symmetric(Grid::AbstractArray{T,4},  Func_Deriv::Function) wher
     end
 
     # ------------------- ζn/J (met[j,k,l,3,n]) -------------------------------------
+    ff=zeros(jmax,kmax,3); df1vec=zeros(jmax,kmax,3)
+    gg=zeros(jmax,kmax,3); df2vec=zeros(jmax,kmax,3)
     for l=1:lmax
-        ff=zeros(jmax,kmax,3); df1vec=zeros(jmax,kmax,3)
-        gg=zeros(jmax,kmax,3); df2vec=zeros(jmax,kmax,3)
+        fill!(ff, 0.0); fill!(gg, 0.0); fill!(df1vec, 0.0);fill!(df2vec, 0.0);
         for k=1:kmax,j=1:jmax
             ff[j,k,1] = yξ[j,k,l]*zc[j,k,l] - zξ[j,k,l]*yc[j,k,l] #y_xi*z-z_xi*y
             ff[j,k,2] = zξ[j,k,l]*xc[j,k,l] - xξ[j,k,l]*zc[j,k,l] #z_xi*x-x_xi*z
@@ -208,46 +224,58 @@ function metrics_symmetric(Grid::AbstractArray{T,4},  Func_Deriv::Function) wher
     #               +[ xi_z/J   * z + xi_x/J   * x + xi_y/J   * y ]_xi   (: xi-Func_deriv part)
 
     # zeta-Func_deriv part
+    ff = zeros(lmax)
     for k=1:kmax
         for j=1:jmax
-            ff=zeros(lmax)
+            fill!(ff,0.0)
             for l=1:lmax
                 ff[l] = met[j,k,l,3,3]*zc[j,k,l] # zeta_z/J * z
                       + met[j,k,l,1,3]*xc[j,k,l] # zeta_x/J * x
                       + met[j,k,l,2,3]*yc[j,k,l] # zeta_y/J * y
             end
-            Jacobi_inv[j,k,:]    += Func_Deriv(ff) # defiv for zeta-direction
+            # Jacobi_inv[j,k,:] .+= Func_Deriv(ff) # defiv for zeta-direction
+            Jacobi_inv[j,k,:] = Jacobi_inv[j,k,:] .+ Func_Deriv(ff) # defiv for zeta-direction
         end
     end
+    alocal = Jacobi_inv
     
     # eta -Func_deriv part
+    ff = zeros(kmax)
     for l=1:lmax
         for j=1:jmax
-            ff=zeros(kmax)
+            fill!(ff,0.0)
             for k=1:kmax
                 ff[k] = met[j,k,l,3,2] * zc[j,k,l]
                       + met[j,k,l,1,2] * xc[j,k,l]
                       + met[j,k,l,2,2] * yc[j,k,l]
             end
-            Jacobi_inv[j,:,l] +=Func_Deriv(ff)
+            # Jacobi_inv[j,:,l] .+=Func_Deriv(ff)
+            Jacobi_inv[j,:,l] = Jacobi_inv[j,:,l] + Func_Deriv(ff)
         end
     end
+    # @assert sum(alocal .< Jacobi_inv) == length(alocal)
+    alocal = Jacobi_inv
 
     # xi-Func_deriv part
+    ff=zeros(jmax)
     for l=1:lmax
         for k=1:kmax
-            ff=zeros(jmax)
+            fill!(ff,0.0)
             for j=1:jmax
                 ff[j] = met[j,k,l,3,1] * zc[j,k,l]
                       + met[j,k,l,2,1] * xc[j,k,l]
                       + met[j,k,l,1,1] * yc[j,k,l]
             end
-            Jacobi_inv[:,k,l] +=Func_Deriv(ff)
+            # Jacobi_inv[:,k,l] .+=Func_Deriv(ff)
+            Jacobi_inv[:,k,l] = Jacobi_inv[:,k,l] + Func_Deriv(ff)
         end
     end
+    # println(sum(alocal .< Jacobi_inv))
+    # @assert sum(alocal .< Jacobi_inv) == length(alocal)
 
     # divided by 3
-    Jacobi_inv = Jacobi_inv/3
+    # c = 1.0/3.0;
+    # Jacobi_inv .*=c
 
     # ---------------------------------------------------------
     # compute symmetric Jaccobian & Metrics
@@ -256,17 +284,17 @@ function metrics_symmetric(Grid::AbstractArray{T,4},  Func_Deriv::Function) wher
     for l=1:lmax
         for k=1:kmax
             for j=1:jmax
-                Jacobi_inv[j,k,l] = 1/Jacobi_inv[j,k,l]
+                Jacobi_inv[j,k,l] = 1.0/Jacobi_inv[j,k,l]
 
-                met[j,k,l,1,1] = met[j,k,l,1,1] * Jacobi_inv[j,k,l]
-                met[j,k,l,2,1] = met[j,k,l,2,1] * Jacobi_inv[j,k,l]
-                met[j,k,l,3,1] = met[j,k,l,3,1] * Jacobi_inv[j,k,l]
-                met[j,k,l,1,2] = met[j,k,l,1,2] * Jacobi_inv[j,k,l]
-                met[j,k,l,2,2] = met[j,k,l,2,2] * Jacobi_inv[j,k,l]
-                met[j,k,l,3,2] = met[j,k,l,3,2] * Jacobi_inv[j,k,l]
-                met[j,k,l,1,3] = met[j,k,l,1,3] * Jacobi_inv[j,k,l]
-                met[j,k,l,2,3] = met[j,k,l,2,3] * Jacobi_inv[j,k,l]
-                met[j,k,l,3,3] = met[j,k,l,3,3] * Jacobi_inv[j,k,l]
+                met[j,k,l,1,1] = met[j,k,l,1,1] * Jacobi_inv[j,k,l]  #xi_x
+                met[j,k,l,2,1] = met[j,k,l,2,1] * Jacobi_inv[j,k,l]  #xi_y
+                met[j,k,l,3,1] = met[j,k,l,3,1] * Jacobi_inv[j,k,l]  #xi_z
+                met[j,k,l,1,2] = met[j,k,l,1,2] * Jacobi_inv[j,k,l]  #eta_x 
+                met[j,k,l,2,2] = met[j,k,l,2,2] * Jacobi_inv[j,k,l]  #eta_y
+                met[j,k,l,3,2] = met[j,k,l,3,2] * Jacobi_inv[j,k,l]  #eta_z
+                met[j,k,l,1,3] = met[j,k,l,1,3] * Jacobi_inv[j,k,l]  #zeta_x
+                met[j,k,l,2,3] = met[j,k,l,2,3] * Jacobi_inv[j,k,l]  #zeta_y
+                met[j,k,l,3,3] = met[j,k,l,3,3] * Jacobi_inv[j,k,l]  #zeta_z
             end
         end
     end
@@ -549,7 +577,17 @@ end
 
 """
     metrics(Grid::AbstractArray{T,4}, Func_Deriv1dvec::Function) where T
-returns Jaccobian and metrics
+returns Jaccobian and metrics.
+
+
+## Output
+# 
+#       --             --
+#      |xi_x eta_x zeta_x|   [1,1] [1,2] [1,3]
+# met= |xi_y eta_y zeta_y|   [2,1]  ...    :
+#      |xi_z eta_z zeta_z|   [3,1]  ...  [3,3]
+#       --             --
+# 
 """
 function metrics(Grid::AbstractArray{T,4}, Func_Deriv1dvec::Function) where T
     jmax,kmax,lmax,dum1= size(Grid)
@@ -567,7 +605,7 @@ function metrics(Grid::AbstractArray{T,4}, Func_Deriv1dvec::Function) where T
     
     # compute on k=const.,l=const. plane
     # x_xi, y_xi, z_xi
-    if jmax > 1
+    if jmax > 3
         for l in axes(Grid,3)
             for k in axes(Grid,2)
                 xξ[:,k,l] = Func_Deriv1dvec( view(Grid, :, k, l,1) )
@@ -583,7 +621,7 @@ function metrics(Grid::AbstractArray{T,4}, Func_Deriv1dvec::Function) where T
 
     # compute on j=const.,l=const. plane
     # x_eta, y_eta, z_eta
-    if kmax >1
+    if kmax > 3
         for l in axes(Grid,3)
             for j in axes(Grid,1)
                 xη[j,:,l] = Func_Deriv1dvec( view(Grid, j, :, l,1) )
@@ -600,7 +638,7 @@ function metrics(Grid::AbstractArray{T,4}, Func_Deriv1dvec::Function) where T
     # compute on k=const. plane
     # zeta-diff on j=const
     # x_zeta, y_zeta, z_zeta 
-    if lmax >1
+    if lmax > 3
         for k in axes(Grid,2)
             for j in axes(Grid,1)
                 xζ[j,k,:] = Func_Deriv1dvec( view(Grid, j, k, :,1) )
@@ -655,7 +693,7 @@ function Jacobian(Grid::AbstractArray{T,4}, Func_Deriv1dvec::Function) where T
 
     # compute on k=const.,l=const. plane
     # x_xi, y_xi, z_xi
-    if jmax > 1
+    if jmax > 3
         @inbounds begin 
         for l in axes(Grid,3)
             for k in axes(Grid,2)
@@ -673,7 +711,7 @@ function Jacobian(Grid::AbstractArray{T,4}, Func_Deriv1dvec::Function) where T
 
     # compute on j=const.,l=const. plane
     # x_eta, y_eta, z_eta
-    if kmax >1
+    if kmax > 3
         @inbounds begin 
         for l in axes(Grid,3)
             for j in axes(Grid,1)
@@ -692,7 +730,7 @@ function Jacobian(Grid::AbstractArray{T,4}, Func_Deriv1dvec::Function) where T
     # compute on k=const. plane
     # zeta-diff on j=const
     # x_zeta, y_zeta, z_zeta 
-    if lmax >1
+    if lmax > 3
         @inbounds begin 
         for k in axes(Grid,2)
             for j in axes(Grid,1)
