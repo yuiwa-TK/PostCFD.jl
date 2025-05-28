@@ -47,13 +47,30 @@ end
 function derivative_2ndcentral(f::AbstractVector{S}) where S
     nmax = length(f)
     df = similar(f)
+    c11, c12 = 1.5, -0.5
 
     @inbounds for j = 2:nmax-1
         df[j] = 0.5 * ((f[j+1] - f[j]) + (f[j] - f[j-1]))
     end
-    df[1] = (-3f[1] + 4f[2] - f[3]) * 0.5
-    df[end] = (3f[end] - 4f[end-1] + f[end-2]) * 0.5
+    # df[1] = (-3f[1] + 4f[2] - f[3]) * 0.5
+    # df[end] = (3f[end] - 4f[end-1] + f[end-2]) * 0.5
+
+    df[1] = c11 * (f[2] - f[1]) + c12 * (f[3] - f[2])
+    df[end] =  (c11 * (- f[end-1] + f[end]) + c12 * (-f[end-2] + f[end-1]) )
     return df
+end
+
+"""
+   derivative_1stsided(f::AbstractVector{S}) where S
+"""
+function derivative_1stsided(f::AbstractVector{S}) where S
+    nmax = length(f)
+    dfdx = similar(f)
+    @inbounds for n in 1:nmax-1
+        dfdx[n] = (f[n+1] - f[n])
+    end
+    dfdx[end] = (3f[end] - 4f[end-1] + f[end-2]) * 0.5
+    return dfdx
 end
 
 
@@ -72,7 +89,7 @@ end
     derivative_compact_6th(f::AbstractVector{S}) where S
 """
 function derivative_compact_6th(f::AbstractVector{S}) where S
-    aa, bb, cc = 1 / 3, 1.0 , 1 / 3
+    aa, bb, cc = 1 / 3, 1.0, 1 / 3
     div1, coe1, coe2 = 1 / 36, 1.0, 28
     div2, coe21, coe22 = 1.0, 0.5, 0.5
 
