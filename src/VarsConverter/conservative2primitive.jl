@@ -24,12 +24,12 @@ function conv2prim(qc,dim::Tuple{Int,Int,Int,Int};verbose=2)
   p = gamma1.*(re-ke)
   t = p./(r*gasc)
 
-  qp[:,:,:,1] = r 
-  qp[:,:,:,2] = u 
-  qp[:,:,:,3] = v 
-  qp[:,:,:,4] = w 
-  qp[:,:,:,5] = t
-  qp[:,:,:,6] = p
+  qp[:,:,:,1] .= r 
+  qp[:,:,:,2] .= u 
+  qp[:,:,:,3] .= v 
+  qp[:,:,:,4] .= w 
+  qp[:,:,:,5] .= t
+  qp[:,:,:,6] .= p
   return qp
 end
 
@@ -59,12 +59,12 @@ function conv2prim(qc,dim::Tuple{Int,Int,Int};verbose=2)
   p = gamma1.*(re-ke)
   t = p./(r*gasc)
 
-  qp[:,:,1] = r 
-  qp[:,:,2] = u 
-  qp[:,:,3] = v 
-  qp[:,:,4] = w 
-  qp[:,:,5] = t
-  qp[:,:,6] = p
+  qp[:,:,1] .= r 
+  qp[:,:,2] .= u 
+  qp[:,:,3] .= v 
+  qp[:,:,4] .= w 
+  qp[:,:,5] .= t
+  qp[:,:,6] .= p
   return qp
 end
 
@@ -94,11 +94,11 @@ function conv2prim(qc,dim::Tuple{Int,Int};verbose=2)
   p = gamma1.*(re-ke)
   t = p./(r*gasc)
 
-  qp[:,1] = r 
-  qp[:,2] = u 
-  qp[:,3] = v 
-  qp[:,4] = w 
-  qp[:,5] = t
-  qp[:,6] = p
+  qp[:,1] .= r 
+  qp[:,2] .= u 
+  qp[:,3] .= v 
+  qp[:,4] .= w 
+  qp[:,5] .= t
+  qp[:,6] .= p
   return qp
 end
