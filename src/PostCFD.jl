@@ -1,6 +1,14 @@
 module PostCFD
 using Reexport
 
+
+# Derivative and Integral of vector data
+include("Math/MathLib.jl")
+@reexport using .MathLib
+
+include("Geom/Geometry.jl")
+@reexport using .Geometry
+
 # Some useful converter for post processing
 include("VarsConverter/ConvertVars.jl")
 @reexport using .VarsConverter
@@ -25,11 +33,5 @@ include("FortranFileManeger/Manage_fortranfiles.jl")
 @reexport using .FortranFileWriter
 @reexport using .FortranFileReader
 
-# Derivative and Integral of vector data
-include("Math/MathLib.jl")
-@reexport using .MathLib
-
-include("Geom/Geometry.jl")
-@reexport using .Geometry
 
 end # module
