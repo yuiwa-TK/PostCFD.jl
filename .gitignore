@@ -4,4 +4,5 @@
 /Manifest.toml
 /docs/build/
 /test/datasets
+/test/check
 *.vscode
