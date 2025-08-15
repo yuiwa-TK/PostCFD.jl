@@ -1,10 +1,10 @@
 """
-    derivative_curvilinear(f::AbstractArray{S},metrics::AbstractArray{T},func_deriv::Function,idirection::Int) where {S, T}
+    derivative_curvilinear(f::AbstractArray{<:AbstractFloat},metrics::AbstractArray{T},func_deriv::Function,idirection::Int) where {<:AbstractFloat, T}
 
 Compute derivative in curvilinear coordinate.
 
 # Arguments
-- `f::AbstractArray{S,3}`: array of variable 
+- `f::AbstractArray{<:AbstractFloat,3}`: array of variable 
 - `metrics::AbstractArray{T,5}` : array of metrics whose size is [3,3, jmax, kmax, lmax]. 
 - `func_deriv::Function` : function for derivative, whose argument is 1D vector and which returns the vector's derivative.
 - `idirection::Int` : choose from [1,2,3] the direction 
@@ -50,7 +50,7 @@ function derivative_curvilinear(f::AbstractArray{<:AbstractFloat,3},metrics::Abs
 
     else #[df/dx; df/dy; df/dz]
         JD,KD,~ = size(f)
-        df = Array{S}(undef,JD,KD,3)
+        df = similar(f,JD,KD,3)
         @views begin
             df[:,:,1] .= metrics[:,:,:,1,1].*dfdξ + metrics[:,:,:,1,2].*dfdη + metrics[:,:,:,1,3].*dfdζ
             df[:,:,2] .= metrics[:,:,:,2,1].*dfdξ + metrics[:,:,:,2,2].*dfdη + metrics[:,:,:,2,3].*dfdζ
@@ -83,11 +83,11 @@ function derivative_curvilinear(f::AbstractArray{<:AbstractFloat,2},metrics::Abs
 
     else #[df/dx; df/dy]
         JD, KD = size(f)
-        df = Array{S,3}(undef,JD,KD,2)
+        df = similar(f,JD,KD,2)
         @views df[:,:,1].= metrics[:,:,1,1].*dfdξ + metrics[:,:,1,2].*dfdη
         @views df[:,:,2].= metrics[:,:,2,1].*dfdξ + metrics[:,:,2,2].*dfdη
         return  df
     end
 end
 
-derivative_curvilinear2D(f::AbstractArray{<:AbstractFloat,2},metrics::AbstractArray{<:AbstractFloat,4},func_deriv::Function,idirection::Int) where {S, T} =derivative_curvilinear(f::AbstractArray{S,2},metrics::AbstractArray{T,4},func_deriv::Function,idirection::Int)
+derivative_curvilinear2D(f::AbstractArray{<:AbstractFloat,2},metrics::AbstractArray{<:AbstractFloat,4},func_deriv::Function,idirection::Int) =derivative_curvilinear(f::AbstractArray{<:AbstractFloat,2},metrics::AbstractArray{<:AbstractFloat,4},func_deriv::Function,idirection::Int)
