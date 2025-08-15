@@ -15,7 +15,7 @@ function read_function_single(filename::String; verbose=2,endian="little")
         if endian!="little"
             jmax,kmax,lmax,nvar=ntoh.([jmax,kmax,lmax,nvar])
         end
-        @show jmax,kmax,lmax,nvar
+        if verbose>=1 ; @show jmax,kmax,lmax,nvar; end
         qall = Array{Float32}(undef,(jmax,kmax,lmax,nvar))
         read!(io,qall)
     end
@@ -43,7 +43,7 @@ function read_function_double(filename::String; verbose=2,endian="little")
         if endian!="little"
             jmax,kmax,lmax,nvar=ntoh.([jmax,kmax,lmax,nvar])
         end
-        @show jmax,kmax,lmax,nvar
+        if verbose>=1 ; @show jmax,kmax,lmax,nvar; end
         qall = Array{Float64}(undef,(jmax,kmax,lmax,nvar))
         read!(io,qall)
     end
