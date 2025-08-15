@@ -9,7 +9,7 @@ export Jacobian,Jacobian_symmetric,metrics,metrics_symmetric
     J,metrics =metrics_symmetric(Grid::AbstractArray{T,4},  Func_Deriv::Function) where T
 
 computes the metrics of grid &
-returns met::Array{S}(3,3,jmax,kmax,lmax)
+returns met::Array{S}(jmax,kmax,lmax,3,3)
 
 ## Input
 - Grid : 4dimensional array (i.e., size(Grid)=jmax,kmax,lmax,3)
