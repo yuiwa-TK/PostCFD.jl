@@ -94,13 +94,10 @@ J, Met = metrics(G, func_for_deriv)
 #      |xi_z eta_z zeta_z|   [3,1]  ...  [3,3]
 #       --             --
 
-# Metrics that consider the GCL law
-J, Met = metrics_symmetric(G, func_for_deriv)
-
-# Fast-computing implementation by reducing memory allocation ... (in development)
-J, Met = metrics_symmetric_fast(G, func_for_deriv)
+# # Fast-computing implementation by reducing memory allocation ... (in development)
+J = Jacobian_fast(G, func_for_deriv; )
+J, Met = metrics_fast(G, func_for_deriv; )
 
 # For fast-computing implementation with 6th-order compact differencing
 J = Jacobian_fast_compact6th(G) 
-J,Met= metrics_symmetric_fast_compact6th(G)
 ```
