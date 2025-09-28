@@ -49,12 +49,12 @@ function derivative_curvilinear(f::AbstractArray{<:AbstractFloat,3},metrics::Abs
         return df
 
     else #[df/dx; df/dy; df/dz]
-        JD,KD,~ = size(f)
-        df = similar(f,JD,KD,3)
+        JD,KD,LD = size(f)
+        df = similar(f,JD,KD,LD,3)
         @views begin
-            df[:,:,1] .= metrics[:,:,:,1,1].*dfdξ + metrics[:,:,:,1,2].*dfdη + metrics[:,:,:,1,3].*dfdζ
-            df[:,:,2] .= metrics[:,:,:,2,1].*dfdξ + metrics[:,:,:,2,2].*dfdη + metrics[:,:,:,2,3].*dfdζ
-            df[:,:,3] .= metrics[:,:,:,3,1].*dfdξ + metrics[:,:,:,3,2].*dfdη + metrics[:,:,:,3,3].*dfdζ
+            df[:,:,:,1] .= metrics[:,:,:,1,1].*dfdξ + metrics[:,:,:,1,2].*dfdη + metrics[:,:,:,1,3].*dfdζ
+            df[:,:,:,2] .= metrics[:,:,:,2,1].*dfdξ + metrics[:,:,:,2,2].*dfdη + metrics[:,:,:,2,3].*dfdζ
+            df[:,:,:,3] .= metrics[:,:,:,3,1].*dfdξ + metrics[:,:,:,3,2].*dfdη + metrics[:,:,:,3,3].*dfdζ
         end
         return df
     end
