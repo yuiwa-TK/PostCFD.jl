@@ -1,5 +1,5 @@
 
-function derivative_compact_6th!(f::AbstractVector{S},df::AbstractVector{T},kernel_tridiagonal!::Function) where {S,T}
+function derivative_compact_6th!(f::AbstractVector{<:AbstractFloat},df::AbstractVector{<:AbstractFloat},kernel_tridiagonal!::Function)
     aa, bb, cc = 1 / 3, 1.0 , 1 / 3
     div1, coe1, coe2 = 1 / 36, 1.0, 28
     div2, coe21, coe22 = 1.0, 0.5, 0.5
@@ -21,7 +21,7 @@ function derivative_compact_6th!(f::AbstractVector{S},df::AbstractVector{T},kern
     return df
 end
 
-function kernel_tridiagonal!(a::S, b::S, c::S, ns::T, ne::T, rsvec::AbstractVector{U}, workm::AbstractVector{V}) where {S,T,U,V}
+function kernel_tridiagonal!(a::AbstractFloat, b::AbstractFloat, c::AbstractFloat, ns::Integer, ne::Integer, rsvec::AbstractVector{<:AbstractFloat}, workm::AbstractVector{<:AbstractFloat})
     fill!(workm,0.0)
     # removing lower part (forward sweep)
     rsvec[ns] = rsvec[ns] / b
@@ -40,15 +40,41 @@ end
 
 
 """
-    derivative_2ndcentral(f::AbstractVector{S},df::AbstractVector{T}) where {S,T}
+    derivative_2ndcentral(f::AbstractVector{<:AbstractFloat},df::AbstractVector{<:AbstractFloat})
 """
-function derivative_2ndcentral!(f::AbstractVector{S},df::AbstractVector{T}) where {S,T}
+function derivative_2ndcentral!(f::AbstractVector{<:AbstractFloat},df::AbstractVector{<:AbstractFloat}) 
+    @assert length(f)==length(df)
     nmax = length(f)
+    c11, c12 = 1.5, -0.5
 
-    @inbounds for j = 2:nmax-1
+    # @inbounds for j = 2:nmax-1
+    for j = 2:nmax-1
         df[j] = 0.5 * ((f[j+1] - f[j]) + (f[j] - f[j-1]))
     end
-    df[1] = (-3f[1] + 4f[2] - f[3]) * 0.5
-    df[end] = (3f[end] - 4f[end-1] + f[end-2]) * 0.5
-    return df
+    # df[1] = (-3f[1] + 4f[2] - f[3]) * 0.5
+    # df[end] = (3f[end] - 4f[end-1] + f[end-2]) * 0.5
+
+    df[1] =   c11 * (f[2] - f[1]) + c12 * (f[3] - f[2])
+    df[end] = c11 * (- f[end-1] + f[end]) + c12 * (-f[end-2] + f[end-1])
+    # return df
 end
+
+
+# """
+#     derivative_2ndcentral(f::AbstractVector{S}) where S
+# """
+# function derivative_2ndcentral(f::AbstractVector{S}) where S
+#     nmax = length(f)
+#     df = similar(f)
+#     c11, c12 = 1.5, -0.5
+
+#     @inbounds for j = 2:nmax-1
+#         df[j] = 0.5 * ((f[j+1] - f[j]) + (f[j] - f[j-1]))
+#     end
+#     # df[1] = (-3f[1] + 4f[2] - f[3]) * 0.5
+#     # df[end] = (3f[end] - 4f[end-1] + f[end-2]) * 0.5
+
+#     df[1] = c11 * (f[2] - f[1]) + c12 * (f[3] - f[2])
+#     df[end] =  (c11 * (- f[end-1] + f[end]) + c12 * (-f[end-2] + f[end-1]) )
+#     return df
+# end
