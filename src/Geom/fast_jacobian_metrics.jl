@@ -334,7 +334,7 @@ function metrics_fast(Grid::AbstractArray{T,4}, Func_Deriv1dvec!::Function=deriv
 
     # compute on k=const.,l=const. plane
     # x_xi, y_xi, z_xi
-    if jmax > 1
+    if jmax > 3
         workm=zeros(jmax)
         @inbounds begin 
         for l in axes(Grid,3)
@@ -353,7 +353,7 @@ function metrics_fast(Grid::AbstractArray{T,4}, Func_Deriv1dvec!::Function=deriv
 
     # compute on j=const.,l=const. plane
     # x_eta, y_eta, z_eta
-    if kmax >1
+    if kmax > 3
         workm=zeros(kmax)
         @inbounds begin 
         for l in axes(Grid,3)
@@ -373,7 +373,7 @@ function metrics_fast(Grid::AbstractArray{T,4}, Func_Deriv1dvec!::Function=deriv
     # compute on k=const. plane
     # zeta-diff on j=const
     # x_zeta, y_zeta, z_zeta 
-    if lmax >1
+    if lmax >3
         workm=zeros(lmax)
         @inbounds begin 
         for k in axes(Grid,2)
