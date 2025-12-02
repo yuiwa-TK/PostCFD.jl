@@ -1,9 +1,9 @@
 
 """
-     derivative_2ndcentral(f::AbstractVector{T},x::AbstractVector{S}) where {S,T}
+     derivative_2ndcentral(f::AbstractVector{<:AbstractFloat},x::AbstractVector{<:AbstractFloat}) 
 returns df/dx
 """
-function derivative_2ndcentral(f::AbstractVector{T}, x::AbstractVector{S}) where {S,T}
+function derivative_2ndcentral(f::AbstractVector{<:AbstractFloat}, x::AbstractVector{<:AbstractFloat}) 
     dxdxi = similar(x)
     nmax = length(dxdxi)
     for n in 2:nmax-1
@@ -22,10 +22,10 @@ function derivative_2ndcentral(f::AbstractVector{T}, x::AbstractVector{S}) where
 end
 
 """
-   derivative_1stsided(f::AbstractVector{T},x::AbstractVector{S}) where {S,T}
+   derivative_1stsided(f::AbstractVector{<:AbstractFloat},x::AbstractVector{<:AbstractFloat}) 
 returns df/dx
 """
-function derivative_1stsided(f::AbstractVector{T}, x::AbstractVector{S}) where {S,T}
+function derivative_1stsided(f::AbstractVector{<:AbstractFloat}, x::AbstractVector{<:AbstractFloat}) 
     dxdxi = similar(x)
     nmax = length(dxdxi)
     for n in 1:nmax-1
@@ -42,9 +42,9 @@ function derivative_1stsided(f::AbstractVector{T}, x::AbstractVector{S}) where {
 end
 
 """
-    derivative_2ndcentral(f::AbstractVector{S}) where S
+    derivative_2ndcentral(f::AbstractVector{<:AbstractFloat}) 
 """
-function derivative_2ndcentral(f::AbstractVector{S}) where S
+function derivative_2ndcentral(f::AbstractVector{<:AbstractFloat}) 
     nmax = length(f)
     df = similar(f)
     c11, c12 = 1.5, -0.5
@@ -60,10 +60,36 @@ function derivative_2ndcentral(f::AbstractVector{S}) where S
     return df
 end
 
+
 """
-   derivative_1stsided(f::AbstractVector{S}) where S
+    derivative_4thcentral(f::AbstractVector{<:AbstractFloat})
 """
-function derivative_1stsided(f::AbstractVector{S}) where S
+function derivative_4thcentral(f::AbstractVector{<:AbstractFloat})
+    nmax = length(f)
+    df = similar(f)
+
+    # interior: 4th-order central
+    @inbounds for j in 3:nmax-2
+        df[j] = (-f[j+2] + 8f[j+1] - 8f[j-1] + f[j-2]) / 12
+    end
+
+    # boundary: 2nd-order
+    c11, c12 = 1.5, -0.5
+
+    df[1] = c11*(f[2]-f[1]) + c12*(f[3]-f[2])
+    df[2] = c11*(f[3]-f[2]) + c12*(f[4]-f[3])
+
+    df[end]     = c11*(-f[end-1]+f[end])     + c12*(-f[end-2]+f[end-1])
+    df[end-1]   = c11*(-f[end-2]+f[end-1])   + c12*(-f[end-3]+f[end-2])
+
+    return df
+end
+
+
+"""
+   derivative_1stsided(f::AbstractVector{<:AbstractFloat}) 
+"""
+function derivative_1stsided(f::AbstractVector{<:AbstractFloat}) 
     nmax = length(f)
     dfdx = similar(f)
     @inbounds for n in 1:nmax-1
@@ -75,9 +101,9 @@ end
 
 
 """
-    derivative_compact_6th(g::AbstractVector,x::AbstractVector{S}) computes dg/dx
+    derivative_compact_6th(g::AbstractVector,x::AbstractVector{<:AbstractFloat}) computes dg/dx
 """
-function derivative_compact_6th(g::AbstractVector{T}, x::AbstractVector{S}) where {S,T}
+function derivative_compact_6th(g::AbstractVector{<:AbstractFloat}, x::AbstractVector{<:AbstractFloat}) 
     dxdxi = derivative_compact_6th(x)
     dgdxi = derivative_compact_6th(g)
     dfdx = dgdxi ./ dxdxi
@@ -86,9 +112,9 @@ end
 
 
 """
-    derivative_compact_6th(f::AbstractVector{S}) where S
+    derivative_compact_6th(f::AbstractVector{<:AbstractFloat}) 
 """
-function derivative_compact_6th(f::AbstractVector{S}) where S
+function derivative_compact_6th(f::AbstractVector{<:AbstractFloat}) 
     aa, bb, cc = 1 / 3, 1.0, 1 / 3
     div1, coe1, coe2 = 1 / 36, 1.0, 28
     div2, coe21, coe22 = 1.0, 0.5, 0.5
