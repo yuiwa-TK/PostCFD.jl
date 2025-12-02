@@ -17,7 +17,12 @@ Compute the dynamic viscosity using Sutherland's law.
 μ = sutherland(300.0, 273.15, 1.716e-5, 110.4)
 ```
 """
-function sutherland(T::S, T0::S=one(S), μ0::S=one(S), C::S=117*one(S)) where S
-    result = μ0 * (T / T0)^(1.5) * (T0 + C) / (T + C)
-    return S(result)
+function sutherland(T::AbstractFloat, T0=1.0, μ0=1.0, C=117)
+    return μ0 * (T / T0)^(1.5) * (T0 + C) / (T + C)
+end
+
+function sutherland(T::AbstractArray{<:AbstractFloat},T0=1.0,μ0=1.0, C=117)
+    mu = similar(T)
+    mu .= μ0.*(T./T0).^(1.5).*(T0+C)./(T.+C)
+    return mu
 end

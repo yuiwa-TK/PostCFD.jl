@@ -23,9 +23,9 @@ Compute derivative in curvilinear coordinate.
 function derivative_curvilinear_inplace!(df, f::AbstractArray{<:AbstractFloat,3},metrics::AbstractArray{<:AbstractFloat,5},func_deriv!::Function,idirection::Int)
     JD, KD, LD = size(f);
     dfdξ, dfdη, dfdζ = similar(f), similar(f), similar(f)
-    fill!(dfdξ,300)
-    fill!(dfdη,300)
-    fill!(dfdζ,300)
+    # fill!(dfdξ,300.0)
+    # fill!(dfdη,300.0)
+    # fill!(dfdζ,300.0)
 
     @assert sum(isnan.(f))==0
 
@@ -85,4 +85,24 @@ function derivative_curvilinear_inplace!(df, f::AbstractArray{<:AbstractFloat,3}
         return df
     end
 
+end
+
+
+
+function derivative_curvilinear_inplace_compact!(df, f::AbstractArray{<:AbstractFloat,3},metrics::AbstractArray{<:AbstractFloat,5},idirection::Int; verbose=0)
+    JD, KD, LD = size(f);
+    WORKV = zeros(max(JD,KD,LD));
+    if verbose>0
+        println("before differentiating")
+        @info JD, KD, LD
+        @info maximum(f),minimum(f)
+        @info maximum(df),minimum(df)
+    end
+    k2(a, b, c, ns, ne, rsvec) = kernel_tridiagonal!(a, b, c, ns, ne, rsvec, WORKV)
+    func_deriv_inplace!(f,df) =  derivative_compact_6th!(f,df,k2)
+    derivative_curvilinear_inplace!(df, f,metrics,func_deriv_inplace!,idirection)
+    if verbose>0
+        println("after differentiating")
+        @info maximum(df),minimum(df)
+    end
 end
