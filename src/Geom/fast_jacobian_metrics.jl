@@ -426,9 +426,9 @@ function Jacobian_fast_compact6th(Grid::AbstractArray{T,4}) where T
     jmax,kmax,lmax,dum1= size(Grid)
     WORKV = zeros(max(jmax,kmax,lmax));
 
-    k2(a, b, c, ns, ne, rsvec) = kernel_tridiagonal!(a, b, c, ns, ne, rsvec, WORKV)
-
-    func_deriv_inplace!(f,df) =  derivative_compact_6th!(f,df,k2)
+    # k2(a, b, c, ns, ne, rsvec) = kernel_tridiagonal!(a, b, c, ns, ne, rsvec, WORKV)
+    # func_deriv_inplace!(f,df) =  derivative_compact_6th!(f,df,k2)
+    func_deriv_inplace! = generate_compact6th!(max(jmax,kmax,lmax))
 
     return Jacobian_fast(Grid,func_deriv_inplace!)
 end

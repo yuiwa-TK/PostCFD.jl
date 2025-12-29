@@ -17,9 +17,10 @@ function derivative_compact_6th!(f::AbstractVector{<:AbstractFloat},df::Abstract
     end
     df[NS] = df[NS] - aa * df[NS-1]
     df[NE] = df[NE] - cc * df[NE+1]
-    @views begin
-    df[NS:NE] .= kernel_tridiagonal!(aa, bb, cc, NS, NE, df,workm)
-    end
+    # @views begin
+        #   df[NS:NE] .= kernel_tridiagonal!(aa, bb, cc, NS, NE, df,workm)
+    # end
+    kernel_tridiagonal!(aa, bb, cc, NS, NE, df,workm)
     return df
 end
 
@@ -29,15 +30,21 @@ function kernel_tridiagonal!(a::AbstractFloat, b::AbstractFloat, c::AbstractFloa
     rsvec[ns] = rsvec[ns] / b
     workm[ns] = c / b
     @inbounds @simd for n in ns+1:ne
-        # beta_inv = 1 / (b - a * workm[n-1])
-        rsvec[n] = (rsvec[n] - a * rsvec[n-1]) / (b - a * workm[n-1]) #update rsvec
-        workm[n] = c / (b - a * workm[n-1])
+        beta_inv = 1 / (b - a * workm[n-1])
+        rsvec[n] = (rsvec[n] - a * rsvec[n-1]) *beta_inv #update rsvec
+        workm[n] = c *beta_inv
     end
     # removing upper part (backward sweep)
     @inbounds @simd for n in ne-1:-1:ns
         rsvec[n] = rsvec[n] - workm[n] * rsvec[n+1]
     end
-    return rsvec[ns:ne]
+    return nothing
+end
+
+function generate_compact6th!(size_of_workm)
+    workm = zeros(size_of_workm)
+    f1(f,df) = derivative_compact_6th!(f,df,workm)
+    return f1
 end
 
 
