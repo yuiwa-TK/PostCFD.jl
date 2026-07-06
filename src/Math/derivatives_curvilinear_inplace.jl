@@ -27,7 +27,7 @@ function derivative_curvilinear_inplace!(df, f::AbstractArray{<:AbstractFloat,3}
     # fill!(dfdη,300.0)
     # fill!(dfdζ,300.0)
 
-    @assert sum(isnan.(f))==0
+    # @assert sum(isnan.(f))==0
 
     if JD >3 && KD > 3 && LD >3
         # df/dξ, df/dη, df/dζ
@@ -56,37 +56,123 @@ function derivative_curvilinear_inplace!(df, f::AbstractArray{<:AbstractFloat,3}
         dfdζ[:,1,:] .= dfdζ[:,k,:]
         dfdζ[:,3,:] .= dfdζ[:,k,:]
     else
-        @error "not supported sized array", JD,KD,LD
-        return 1
+        # @error "not supported sized array", JD,KD,LD
+        throw(DimensionMismatch("not supported sized array"))
+        # return 1
     end
 
     if idirection==1 # df/dx
         # df = similar(f);
-        df .= metrics[:,:,:,1,1].*dfdξ + metrics[:,:,:,1,2].*dfdη + metrics[:,:,:,1,3].*dfdζ
+        @views df .= metrics[:,:,:,1,1].*dfdξ .+ metrics[:,:,:,1,2].*dfdη .+ metrics[:,:,:,1,3].*dfdζ
         return df
     elseif idirection==2 # df/dy
         # df = similar(f);
-        df .=metrics[:,:,:,2,1].*dfdξ + metrics[:,:,:,2,2].*dfdη + metrics[:,:,:,2,3].*dfdζ
+        @views df .=metrics[:,:,:,2,1].*dfdξ .+ metrics[:,:,:,2,2].*dfdη .+ metrics[:,:,:,2,3].*dfdζ
         return df
 
     elseif idirection==3 # df/dz
         # df = similar(f)
-        df .=metrics[:,:,:,3,1].*dfdξ + metrics[:,:,:,3,2].*dfdη + metrics[:,:,:,3,3].*dfdζ
+        @views df .=metrics[:,:,:,3,1].*dfdξ .+ metrics[:,:,:,3,2].*dfdη .+ metrics[:,:,:,3,3].*dfdζ
         return df
 
-    else #[df/dx; df/dy; df/dz]
-        # JD,KD,LD = size(f)
-        # df = similar(f,JD,KD,LD,3)
-        @views begin
-            df[:,:,:,1] .= metrics[:,:,:,1,1].*dfdξ + metrics[:,:,:,1,2].*dfdη + metrics[:,:,:,1,3].*dfdζ
-            df[:,:,:,2] .= metrics[:,:,:,2,1].*dfdξ + metrics[:,:,:,2,2].*dfdη + metrics[:,:,:,2,3].*dfdζ
-            df[:,:,:,3] .= metrics[:,:,:,3,1].*dfdξ + metrics[:,:,:,3,2].*dfdη + metrics[:,:,:,3,3].*dfdζ
-        end
-        return df
+    else 
+		throw(ArgumentError("idirection must be 1, 2 or 3"))
+
     end
 
 end
 
+
+function derivative_curvilinear_inplace!(df, f::AbstractArray{<:AbstractFloat,3},metrics::AbstractArray{<:AbstractFloat,5},func_deriv!::Function)
+    JD, KD, LD = size(f);
+    dfdξ, dfdη, dfdζ = similar(f), similar(f), similar(f)
+
+    if JD >3 && KD > 3 && LD >3
+        # df/dξ, df/dη, df/dζ
+        for l in axes(f,3), k in axes(f,2)
+            func_deriv!(@view(f[:,k,l]), @view(dfdξ[:,k,l]))
+        end
+        for l in axes(f,3), j in axes(f,1)
+            func_deriv!(@view(f[j,:,l]), @view(dfdη[j,:,l]))
+        end
+        for k in axes(f,2), j in axes(f,1)
+            func_deriv!(@view(f[j,k,:]), @view(dfdζ[j,k,:]))
+        end
+    elseif JD >3 && KD == 3 && LD >3
+        # df/dξ, df/dη, df/dζ
+        k=2;
+        for l in axes(f,3)
+            func_deriv!(@view(f[:,k,l]), @view(dfdξ[:,k,l]) ) # copyではなくview(配列そのもの）を渡す
+        end
+        for j in axes(f,1)
+            func_deriv!(@view(f[j,k,:]), @view(dfdζ[j,k,:]) )
+        end
+
+        dfdξ[:,1,:] .= dfdξ[:,k,:]
+        dfdξ[:,3,:] .= dfdξ[:,k,:]
+        fill!(dfdη,0.0)
+        dfdζ[:,1,:] .= dfdζ[:,k,:]
+        dfdζ[:,3,:] .= dfdζ[:,k,:]
+    else
+        # @error "not supported sized array", JD,KD,LD
+        throw(DimensionMismatch("not supported sized array"))
+        # return 1
+    end
+
+    #[df/dx; df/dy; df/dz]
+	# JD,KD,LD = size(f)
+	# df = similar(f,JD,KD,LD,3)
+	@views begin
+		df[:,:,:,1] .= metrics[:,:,:,1,1].*dfdξ + metrics[:,:,:,1,2].*dfdη + metrics[:,:,:,1,3].*dfdζ
+		df[:,:,:,2] .= metrics[:,:,:,2,1].*dfdξ + metrics[:,:,:,2,2].*dfdη + metrics[:,:,:,2,3].*dfdζ
+		df[:,:,:,3] .= metrics[:,:,:,3,1].*dfdξ + metrics[:,:,:,3,2].*dfdη + metrics[:,:,:,3,3].*dfdζ
+	end
+	return df
+end
+
+
+
+# TO DO : reduce the merory allocation in computation of dfdxi, dfdeta
+function derivative_curvilinear_inplace!(df,f::AbstractArray{<:AbstractFloat,2},metrics::AbstractArray{<:AbstractFloat,4},func_deriv::Function,idirection::Int)
+
+    # df/dξ, df/dη
+    dfdξ, dfdη = similar(f), similar(f)
+    for k in axes(f,2)
+        @views dfdξ[:,k] .= func_deriv(view(f,:,k))
+    end
+    for j in axes(f,1)
+        @views dfdη[j,:] .= func_deriv(view(f,j,:))
+    end
+    
+    if idirection==1 # df/dx
+		@views df .= metrics[:,:,1,1] .* dfdξ .+ metrics[:,:,1,2] .* dfdη
+        return df
+
+    elseif idirection==2 # df/dy
+        @views df .= metrics[:,:,2,1] .* dfdξ .+ metrics[:,:,2,2] .* dfdη
+        return df
+		
+	else 
+		throw(ArgumentError("idirection must be 1 or 2"))
+    end
+end
+
+function derivative_curvilinear_inplace!(df,f::AbstractArray{<:AbstractFloat,2},metrics::AbstractArray{<:AbstractFloat,4},func_deriv::Function)
+
+    # df/dξ, df/dη
+    dfdξ, dfdη = similar(f), similar(f)
+    for k in axes(f,2)
+        @views dfdξ[:,k] .= func_deriv(view(f,:,k))
+    end
+    for j in axes(f,1)
+        @views dfdη[j,:] .= func_deriv(view(f,j,:))
+    end
+    
+	# [df/dx; df/dy]
+	@views df[:,:,1].= metrics[:,:,1,1].*dfdξ .+ metrics[:,:,1,2].*dfdη
+	@views df[:,:,2].= metrics[:,:,2,1].*dfdξ .+ metrics[:,:,2,2].*dfdη
+	return  df
+end
 
 
 function derivative_curvilinear_inplace_compact!(df, f::AbstractArray{<:AbstractFloat,3},metrics::AbstractArray{<:AbstractFloat,5},idirection::Int; verbose=0)
