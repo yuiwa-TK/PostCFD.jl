@@ -2,9 +2,12 @@ module FileWriter
 
 include("./write_flow.jl")
 include("./write_grid.jl")
+include("./write_grid2d.jl")
 include("./write_function.jl")
+include("./write_function2d.jl")
 
-export write_grid, write_flow, write_function
+export write_grid, write_flow, write_function, 
+	write_function2d, write_grid2d
 
 # """
 #   writefiles(filename, data...; mode) 

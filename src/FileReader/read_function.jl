@@ -127,7 +127,7 @@ read_function=read_function_auto
 # input
 - endian = "little"/"big"
 """
-function read_function_specifyingvaribale(filename::String,idvar::Int; verbose=2,endian="little")
+function read_function_specifyingvariable(filename::String,idvar::Int; verbose=2,endian="little")
     NBF_FLOAT64 = 8
     NBF_FLOAT32 = 4
     if verbose>=1

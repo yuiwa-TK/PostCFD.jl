@@ -1,15 +1,18 @@
 module FileReader
 
 include("./read_grid.jl")
+include("./read_grid2d.jl")
 include("./read_flow.jl")
 include("./read_qave.jl")
 include("./read_divided.jl")
 include("./read_header.jl")
 include("./read_function.jl")
+include("./read_function2d.jl")
 include("./read_uns.jl")
 
 export read_grid, read_grid_specifying_xyz, read_grid_specifying_xyz_rect,
-read_flow, read_function, read_function_specifyingvaribale
+read_flow, read_function, read_function_specifyingvaribale, 
+read_function2d, read_function2d_specifyingvariable,read_grid2d
 
 """
     readfiles(filename::String; mode::String [, ids]) 
