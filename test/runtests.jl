@@ -1,6 +1,8 @@
 using PostCFD
 using Test
 
+include("test_derivatives_curvilinear.jl")
+
 @testset "PostCFD.jl" begin
     # Write your tests here.
 
