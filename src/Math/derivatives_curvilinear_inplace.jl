@@ -76,8 +76,14 @@ function derivative_curvilinear_inplace!(df, f::AbstractArray{<:AbstractFloat,3}
         return df
 
     else 
-		throw(ArgumentError("idirection must be 1, 2 or 3"))
-
+		# throw(ArgumentError("idirection must be 1, 2 or 3"))
+		if size(df) != (JD,KD,LD,3)
+			@warn "Check again the size of df (the first argument)" size(df) "is different from" (JD,KD,LD,3)
+		end
+        @views df[:,:,:,1] .=metrics[:,:,:,1,1].*dfdξ .+ metrics[:,:,:,1,2].*dfdη .+ metrics[:,:,:,1,3].*dfdζ
+        @views df[:,:,:,2] .=metrics[:,:,:,2,1].*dfdξ .+ metrics[:,:,:,2,2].*dfdη .+ metrics[:,:,:,2,3].*dfdζ
+        @views df[:,:,:,3] .=metrics[:,:,:,3,1].*dfdξ .+ metrics[:,:,:,3,2].*dfdη .+ metrics[:,:,:,3,3].*dfdζ
+		return df
     end
 
 end
