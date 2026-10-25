@@ -140,7 +140,6 @@ function read_QAVE_HD(filename::AbstractString;verbose=2,endian="little")
     end
     # settings ==============================================
     dims= Array{Int32}(undef,(3))
-    nov  = 5
 
     dims    = Array{Int32}(undef,(3))
     params  = Array{Float64}(undef,(3))
