@@ -130,6 +130,56 @@ function read_restart(filename::AbstractString;verbose=2,endian="little")
 end
 
 """
+    read_QAVE_HD(filename::AbstractString)
+read a stat file with *stat* format written in *little-endian" & "stream*.  
+this function returns *qstat=Array{Float64}(jmax,kmax,lmax,is)*.
+"""
+function read_QAVE_HD(filename::AbstractString;verbose=2,endian="little")
+    if verbose>=1
+        @info filename
+    end
+    # settings ==============================================
+    dims= Array{Int32}(undef,(3))
+    nov  = 5
+
+    dims    = Array{Int32}(undef,(3))
+    params  = Array{Float64}(undef,(3))
+    nc      = Array{Int32}(undef,1)
+    is      = Array{Int32}(undef,1)
+    iv      = Array{Int32}(undef,1)
+    qall    = 0.0
+   
+    open(filename,"r") do io 
+        read!(io,dims)
+        read!(io,params)
+        read!(io,nc) 
+        read!(io,is) 
+        read!(io,iv) 
+        if endian in ["b", "B", "big", "big-endian"]
+            dims=ntoh.(dims)
+            params=ntoh.(params)
+            nc = ntoh(nc)
+        end
+        if verbose>=2
+            @show dims
+            @show params
+            @show nc
+            @show is
+        end
+        jmax = dims[1]
+        kmax = dims[2]
+        lmax = dims[3]
+        qall = Array{Float64}(undef,(jmax,kmax,lmax,is))
+        read!(io,qall)
+    end
+    if endian in ["b", "B", "big", "big-endian"]
+        return ntoh.(qall)
+    else
+        return qall
+    end
+end
+
+"""
     dim,param = read_flow_params(filename::AbstractString; type)
 
 returns the dimension and parameter of flowfile written in pl3d format.
